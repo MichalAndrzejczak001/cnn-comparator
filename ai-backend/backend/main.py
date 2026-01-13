@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from schemas import ExperimentConfig
-from models.factory import create_model
-from datasets.loader import load_dataset
-from training.trainer import train
+from backend.models.factory import create_model
+from backend.datasets.loader import load_dataset
+from backend.training.trainer import train
+from backend.schemas import ExperimentConfig
 import torch.optim as optim
 
 app = FastAPI(
@@ -13,21 +13,36 @@ app = FastAPI(
 
 @app.post("/experiments")
 def run_experiment(config: ExperimentConfig):
-    train_loader, _, num_classes = load_dataset(
+    train_loader, _, num_classes, in_channels = load_dataset(
         config.dataset,
         config.training.batch_size
     )
 
-    model = create_model(config.model, num_classes)
+    input_size = (28, 28) if config.dataset == "mnist" else (32, 32)
+
+    model = create_model(
+        config.model,
+        num_classes,
+        in_channels,
+        input_size
+    )
 
     optimizer = optim.Adam(
         model.parameters(),
         lr=config.training.learning_rate
     )
 
-    history = train(model, train_loader, config.training.epochs, optimizer)
+    history = train(
+        model,
+        train_loader,
+        config.training.epochs,
+        optimizer
+    )
 
-    return {"status": "training finished", "loss_per_epoch": history}
+    return {
+        "status": "training finished",
+        "loss_per_epoch": history
+    }
 
 @app.get("/health")
 def health():
