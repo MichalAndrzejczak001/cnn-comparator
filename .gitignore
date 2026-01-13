@@ -26,3 +26,5 @@ replay_pid*
 
 # MOJE
 ai-backend/data/
+__pycache__/
+*.pyc
