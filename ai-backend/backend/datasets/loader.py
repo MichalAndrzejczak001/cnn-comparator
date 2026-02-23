@@ -4,17 +4,19 @@ from torch.utils.data import DataLoader
 from typing import Tuple
 
 
-def load_dataset(name: str, batch_size: int) -> Tuple[DataLoader, DataLoader, int, int]:
+def load_dataset(name: str, batch_size: int) -> Tuple[DataLoader, DataLoader, int, int, tuple]:
     """
     Zwraca:
     - train_loader
     - test_loader
     - num_classes
     - in_channels
+    - input_size
     """
 
     if name == "mnist":
         transform = transforms.Compose([
+            transforms.Resize((32, 32)),   # <<< TRYB 1
             transforms.ToTensor()
         ])
 
@@ -24,8 +26,9 @@ def load_dataset(name: str, batch_size: int) -> Tuple[DataLoader, DataLoader, in
         return (
             DataLoader(train, batch_size=batch_size, shuffle=True),
             DataLoader(test, batch_size=batch_size),
-            10,   # num_classes
-            1     # in_channels
+            10,
+            1,
+            (32, 32)
         )
 
     elif name == "cifar10":
@@ -39,8 +42,9 @@ def load_dataset(name: str, batch_size: int) -> Tuple[DataLoader, DataLoader, in
         return (
             DataLoader(train, batch_size=batch_size, shuffle=True),
             DataLoader(test, batch_size=batch_size),
-            10,   # num_classes
-            3     # RGB
+            10,
+            3,
+            (32, 32)
         )
 
     else:

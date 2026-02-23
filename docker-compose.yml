@@ -1,0 +1,65 @@
+version: "3.9"
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: cnn-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cnn_db
+      MYSQL_USER: cnn_user
+      MYSQL_PASSWORD: cnn_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - cnn-network
+
+  logic-backend:
+    build: ./logic-backend
+    container_name: cnn-logic-backend
+    restart: always
+    depends_on:
+      - mysql
+      - ai-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/cnn_db
+      SPRING_DATASOURCE_USERNAME: cnn_user
+      SPRING_DATASOURCE_PASSWORD: cnn_password
+      PYTHON_BACKEND_URL: http://ai-backend:8000
+    ports:
+      - "8080:8080"
+    networks:
+      - cnn-network
+
+  ai-backend:
+    build: ./ai-backend
+    container_name: cnn-ai-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    networks:
+      - cnn-network
+
+  frontend:
+    build: ./frontend
+    container_name: cnn-frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8080
+    depends_on:
+      - logic-backend
+    networks:
+      - cnn-network
+
+volumes:
+  mysql_data:
+
+networks:
+  cnn-network:
+    driver: bridge

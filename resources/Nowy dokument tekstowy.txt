@@ -1,0 +1,2 @@
+Włączenie projektu FastAPI
+(venv) PS E:\Michal\Szkola\4_Studia\Przedmioty\Semestry\7_Semestr7\5.PD\Moje\cnn-comparator\ai-backend> uvicorn backend.main:app --reload

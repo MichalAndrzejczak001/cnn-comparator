@@ -9,7 +9,11 @@ class TrainingConfig(BaseModel):
 
 
 class ExperimentConfig(BaseModel):
-    model: Literal["simple_cnn", "lenet5"]
+    model: Literal["simple_cnn", "lenet5", "vgg11", "resnet18"]
+    dataset: Literal["mnist", "cifar10"]
+    training: TrainingConfig
+
+class CompareConfig(BaseModel):
     dataset: Literal["mnist", "cifar10"]
     training: TrainingConfig
 
