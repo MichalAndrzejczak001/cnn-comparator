@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew compileJava)",
+      "Bash(curl *)",
+      "Bash(docker exec cnn-mysql *)",
+      "Bash(docker compose *)",
+      "Bash(./gradlew bootJar)",
+      "Bash(./gradlew clean *)",
+      "PowerShell($body = '{\"username\": \"testuser3\", \"password\": \"test123\"}'; try { $r = Invoke-WebRequest -Uri \"http://localhost:8080/auth/register\" -Method POST -ContentType \"application/json\" -Body $body -UseBasicParsing; Write-Host \"STATUS: $\\($r.StatusCode\\)\"; Write-Host \"BODY: $\\($r.Content\\)\" } catch { Write-Host \"ERROR: $\\($_.Exception.Message\\)\"; Write-Host \"STATUS: $\\($_.Exception.Response.StatusCode.value__\\)\" })",
+      "PowerShell($body = '{\"username\": \"testuser3\", \"password\": \"test123\"}'; $token = \\(Invoke-WebRequest -Uri \"http://localhost:8080/auth/login\" -Method POST -ContentType \"application/json\" -Body $body -UseBasicParsing\\).Content; Write-Host \"TOKEN: $token\"; $r = Invoke-WebRequest -Uri \"http://localhost:8080/api/get1\" -Headers @{ Authorization = \"Bearer $token\" } -UseBasicParsing; Write-Host \"GET /api/get1: $\\($r.StatusCode\\) - $\\($r.Content\\)\")"
+    ]
+  }
+}

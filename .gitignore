@@ -54,4 +54,5 @@ sketch
 # MOJE - idea
 .idea/
 
-
+# Moje - env
+.env

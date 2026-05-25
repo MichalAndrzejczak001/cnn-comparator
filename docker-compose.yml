@@ -20,16 +20,13 @@ services:
 
   logic-backend:
     build: ./logic-backend
+    env_file:
+      - .env
     container_name: cnn-logic-backend
     restart: always
     depends_on:
       - mysql
       - ai-backend
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/cnn_db
-      SPRING_DATASOURCE_USERNAME: cnn_user
-      SPRING_DATASOURCE_PASSWORD: cnn_password
-      PYTHON_BACKEND_URL: http://ai-backend:8000
     ports:
       - "8080:8080"
     networks:
