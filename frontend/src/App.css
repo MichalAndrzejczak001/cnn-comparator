@@ -753,3 +753,46 @@ select.form-input option {
   padding: 2rem;
   color: #4f6080;
 }
+
+/* ===== Overview stats ===== */
+
+.overview-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.overview-stat {
+  background: rgba(14, 20, 38, 0.85);
+  border: 1px solid rgba(79, 134, 247, 0.14);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  transition: border-color 0.18s;
+}
+
+.overview-stat:hover {
+  border-color: rgba(79, 134, 247, 0.28);
+}
+
+.overview-stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #4f86f7;
+  line-height: 1.15;
+  word-break: break-word;
+}
+
+.overview-stat-label {
+  font-size: 0.75rem;
+  color: #4f6080;
+  margin-top: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.overview-stat-sub {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-top: 0.35rem;
+}

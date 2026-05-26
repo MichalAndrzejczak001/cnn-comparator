@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { compareExperiments } from '../../api/client'
 import type { ExperimentResponse } from '../../types/api'
+import OverviewView from './OverviewView'
 import NewExperimentView from './NewExperimentView'
 import HistoryView from './HistoryView'
 import CompareSelectedView from './CompareSelectedView'
 import CompareAllView from './CompareAllView'
 
-type View = 'new' | 'history' | 'compare-selected' | 'compare-all'
+type View = 'overview' | 'new' | 'history' | 'compare-selected' | 'compare-all'
 
 interface DashboardProps {
   username: string
@@ -14,7 +15,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ username, onLogout }: DashboardProps) {
-  const [view, setView] = useState<View>('new')
+  const [view, setView] = useState<View>('overview')
   const [compareData, setCompareData] = useState<ExperimentResponse[] | null>(null)
   const [compareError, setCompareError] = useState('')
 
@@ -45,6 +46,12 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
 
       <div className="dash-body">
         <nav className="dash-nav">
+          <button
+            className={`dash-nav-item${view === 'overview' ? ' active' : ''}`}
+            onClick={() => setView('overview')}
+          >
+            Przegląd
+          </button>
           <button
             className={`dash-nav-item${view === 'new' ? ' active' : ''}`}
             onClick={() => setView('new')}
@@ -79,6 +86,7 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
               {compareError}
             </div>
           )}
+          {view === 'overview' && <OverviewView />}
           {view === 'new' && <NewExperimentView />}
           {view === 'history' && (
             <HistoryView onCompareSelected={handleCompareSelected} />
