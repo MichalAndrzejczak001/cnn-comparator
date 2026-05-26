@@ -6,8 +6,10 @@ import NewExperimentView from './NewExperimentView'
 import HistoryView from './HistoryView'
 import CompareSelectedView from './CompareSelectedView'
 import CompareAllView from './CompareAllView'
+import ModelsView from './ModelsView'
+import DatasetsView from './DatasetsView'
 
-type View = 'overview' | 'new' | 'history' | 'compare-selected' | 'compare-all'
+type View = 'overview' | 'new' | 'history' | 'compare-selected' | 'compare-all' | 'models' | 'datasets'
 
 interface DashboardProps {
   username: string
@@ -78,6 +80,19 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
           >
             Porównaj wszystkie
           </button>
+          <div className="dash-nav-divider" />
+          <button
+            className={`dash-nav-item${view === 'models' ? ' active' : ''}`}
+            onClick={() => setView('models')}
+          >
+            O modelach
+          </button>
+          <button
+            className={`dash-nav-item${view === 'datasets' ? ' active' : ''}`}
+            onClick={() => setView('datasets')}
+          >
+            O zbiorach danych
+          </button>
         </nav>
 
         <main className="dash-content">
@@ -95,6 +110,8 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
             <CompareSelectedView experiments={compareData} />
           )}
           {view === 'compare-all' && <CompareAllView />}
+          {view === 'models' && <ModelsView />}
+          {view === 'datasets' && <DatasetsView />}
         </main>
       </div>
     </div>
