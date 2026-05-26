@@ -13,6 +13,7 @@ import spring.project.thesis.logicbackend.dto.ExperimentRequest;
 import spring.project.thesis.logicbackend.dto.ExperimentResponse;
 import spring.project.thesis.logicbackend.dto.ExperimentResult;
 import spring.project.thesis.logicbackend.dto.NoteRequest;
+import spring.project.thesis.logicbackend.dto.TrainingConfig;
 import spring.project.thesis.logicbackend.user.User;
 import spring.project.thesis.logicbackend.user.UserRepository;
 
@@ -58,6 +59,27 @@ public class ExperimentService {
                 .stream()
                 .map(ExperimentResponse::from)
                 .toList();
+    }
+
+    public ExperimentResponse rerunExperiment(Long experimentId) {
+        Experiment original = experimentRepository.findById(experimentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!original.getUser().getId().equals(currentUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        ExperimentRequest request = new ExperimentRequest();
+        request.setModel(original.getModel());
+        request.setDataset(original.getDataset());
+
+        TrainingConfig training = new TrainingConfig();
+        training.setEpochs(original.getEpochs());
+        training.setBatchSize(original.getBatchSize());
+        training.setLearningRate(original.getLearningRate());
+        request.setTraining(training);
+
+        return runExperiment(request);
     }
 
     public ExperimentResponse updateNote(Long experimentId, NoteRequest request) {

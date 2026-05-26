@@ -33,6 +33,11 @@ public class ExperimentController {
         return experimentService.getHistory();
     }
 
+    @PostMapping("/experiments/{id}/rerun")
+    public ExperimentResponse rerunExperiment(@PathVariable Long id) {
+        return experimentService.rerunExperiment(id);
+    }
+
     @PatchMapping("/experiments/{id}/note")
     public ExperimentResponse updateNote(@PathVariable Long id, @RequestBody NoteRequest request) {
         return experimentService.updateNote(id, request);
