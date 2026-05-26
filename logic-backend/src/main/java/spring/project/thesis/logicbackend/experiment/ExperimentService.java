@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import spring.project.thesis.logicbackend.dto.CompareExperimentsRequest;
 import spring.project.thesis.logicbackend.dto.CompareRequest;
 import spring.project.thesis.logicbackend.dto.CompareResult;
 import spring.project.thesis.logicbackend.dto.ExperimentRequest;
@@ -57,6 +58,20 @@ public class ExperimentService {
     public List<ExperimentResponse> getHistory() {
         return experimentRepository.findByUserOrderByCreatedAtDesc(currentUser())
                 .stream()
+                .map(ExperimentResponse::from)
+                .toList();
+    }
+
+    public List<ExperimentResponse> compareExperiments(CompareExperimentsRequest request) {
+        User user = currentUser();
+        return request.getIds().stream()
+                .map(id -> experimentRepository.findById(id)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                .peek(experiment -> {
+                    if (!experiment.getUser().getId().equals(user.getId())) {
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+                    }
+                })
                 .map(ExperimentResponse::from)
                 .toList();
     }

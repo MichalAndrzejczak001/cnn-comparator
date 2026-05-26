@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import spring.project.thesis.logicbackend.dto.NoteRequest;
+import spring.project.thesis.logicbackend.dto.CompareExperimentsRequest;
 import spring.project.thesis.logicbackend.dto.CompareRequest;
 import spring.project.thesis.logicbackend.dto.CompareResult;
 import spring.project.thesis.logicbackend.dto.ExperimentRequest;
@@ -36,6 +37,11 @@ public class ExperimentController {
     @PostMapping("/experiments/{id}/rerun")
     public ExperimentResponse rerunExperiment(@PathVariable Long id) {
         return experimentService.rerunExperiment(id);
+    }
+
+    @PostMapping("/experiments/compare")
+    public List<ExperimentResponse> compareExperiments(@RequestBody CompareExperimentsRequest request) {
+        return experimentService.compareExperiments(request);
     }
 
     @PatchMapping("/experiments/{id}/note")
