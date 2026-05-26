@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import spring.project.thesis.logicbackend.dto.CompareRequest;
+import spring.project.thesis.logicbackend.dto.CompareResult;
 import spring.project.thesis.logicbackend.dto.ExperimentRequest;
 import spring.project.thesis.logicbackend.dto.ExperimentResult;
 
@@ -21,6 +23,14 @@ public class ExperimentService {
                 aiBackendUrl + "/experiments",
                 request,
                 ExperimentResult.class
+        );
+    }
+
+    public CompareResult runCompare(CompareRequest request) {
+        return restTemplate.postForObject(
+                aiBackendUrl + "/compare",
+                request,
+                CompareResult.class
         );
     }
 }
