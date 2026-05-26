@@ -38,5 +38,8 @@ public class Experiment {
     private double testLoss;
     private double testAccuracy;
 
+    @Column(length = 1000)
+    private String note;
+
     private LocalDateTime createdAt;
 }

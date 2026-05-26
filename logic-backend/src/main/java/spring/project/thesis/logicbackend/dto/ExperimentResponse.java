@@ -32,6 +32,8 @@ public class ExperimentResponse {
     @JsonProperty("test_accuracy")
     private double testAccuracy;
 
+    private String note;
+
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
@@ -46,6 +48,7 @@ public class ExperimentResponse {
                 .trainLossPerEpoch(experiment.getTrainLossPerEpoch())
                 .testLoss(experiment.getTestLoss())
                 .testAccuracy(experiment.getTestAccuracy())
+                .note(experiment.getNote())
                 .createdAt(experiment.getCreatedAt())
                 .build();
     }

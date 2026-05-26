@@ -5,11 +5,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import spring.project.thesis.logicbackend.dto.CompareRequest;
 import spring.project.thesis.logicbackend.dto.CompareResult;
 import spring.project.thesis.logicbackend.dto.ExperimentRequest;
 import spring.project.thesis.logicbackend.dto.ExperimentResponse;
 import spring.project.thesis.logicbackend.dto.ExperimentResult;
+import spring.project.thesis.logicbackend.dto.NoteRequest;
 import spring.project.thesis.logicbackend.user.User;
 import spring.project.thesis.logicbackend.user.UserRepository;
 
@@ -27,14 +30,14 @@ public class ExperimentService {
     @Value("${ai-backend.url}")
     private String aiBackendUrl;
 
-    public ExperimentResult runExperiment(ExperimentRequest request) {
+    public ExperimentResponse runExperiment(ExperimentRequest request) {
         ExperimentResult result = restTemplate.postForObject(
                 aiBackendUrl + "/experiments",
                 request,
                 ExperimentResult.class
         );
 
-        experimentRepository.save(Experiment.builder()
+        Experiment saved = experimentRepository.save(Experiment.builder()
                 .user(currentUser())
                 .model(request.getModel())
                 .dataset(request.getDataset())
@@ -47,7 +50,7 @@ public class ExperimentService {
                 .createdAt(LocalDateTime.now())
                 .build());
 
-        return result;
+        return ExperimentResponse.from(saved);
     }
 
     public List<ExperimentResponse> getHistory() {
@@ -55,6 +58,18 @@ public class ExperimentService {
                 .stream()
                 .map(ExperimentResponse::from)
                 .toList();
+    }
+
+    public ExperimentResponse updateNote(Long experimentId, NoteRequest request) {
+        Experiment experiment = experimentRepository.findById(experimentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!experiment.getUser().getId().equals(currentUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        experiment.setNote(request.getNote());
+        return ExperimentResponse.from(experimentRepository.save(experiment));
     }
 
     public CompareResult runCompare(CompareRequest request) {
