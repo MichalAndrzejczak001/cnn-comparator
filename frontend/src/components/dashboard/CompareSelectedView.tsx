@@ -1,6 +1,7 @@
 import type { ExperimentResponse } from '../../types/api'
 import { MODEL_COLORS, MODEL_LABELS } from '../../types/api'
 import LossChart from './LossChart'
+import { downloadCsv, csvDate } from '../../utils/csv'
 
 interface CompareSelectedViewProps {
   experiments: ExperimentResponse[]
@@ -9,12 +10,38 @@ interface CompareSelectedViewProps {
 export default function CompareSelectedView({ experiments }: CompareSelectedViewProps) {
   const best = [...experiments].sort((a, b) => b.test_accuracy - a.test_accuracy)[0]
 
+  function exportCsv() {
+    const header = ['ID', 'Model', 'Zbiór danych', 'Epoki', 'Batch size', 'Learning rate',
+                    'Dokładność test.', 'Strata test.', 'Notatka']
+    const body = experiments.map(e => [
+      e.id,
+      MODEL_LABELS[e.model] ?? e.model,
+      e.dataset,
+      e.epochs,
+      e.batch_size,
+      e.learning_rate,
+      (e.test_accuracy * 100).toFixed(4),
+      e.test_loss.toFixed(6),
+      e.note ?? '',
+    ])
+    downloadCsv(`porownanie_wybrane_${csvDate()}.csv`, [header, ...body])
+  }
+
   return (
     <div className="view">
-      <h2 className="view-title">Porównanie wybranych eksperymentów</h2>
-      <p className="view-desc">
-        Zestawienie {experiments.length} wybranych eksperymentów z historii.
-      </p>
+      <div className="view-header">
+        <div>
+          <h2 className="view-title">Porównanie wybranych eksperymentów</h2>
+          <p className="view-desc" style={{ margin: 0 }}>
+            Zestawienie {experiments.length} wybranych eksperymentów z historii.
+          </p>
+        </div>
+        <div className="view-actions">
+          <button className="btn-outline" onClick={exportCsv}>
+            Eksportuj CSV
+          </button>
+        </div>
+      </div>
 
       <div className="card">
         <table className="data-table">

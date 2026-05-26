@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { getExperiments, rerunExperiment, updateNote } from '../../api/client'
 import type { ExperimentResponse } from '../../types/api'
 import { MODEL_LABELS } from '../../types/api'
+import { downloadCsv, csvDate } from '../../utils/csv'
 
 interface HistoryViewProps {
   onCompareSelected: (ids: number[]) => void
@@ -87,6 +88,24 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
     }
   }
 
+  function exportCsv() {
+    const header = ['ID', 'Model', 'Zbiór danych', 'Epoki', 'Batch size', 'Learning rate',
+                    'Dokładność test.', 'Strata test.', 'Notatka', 'Data']
+    const body = experiments.map(e => [
+      e.id,
+      MODEL_LABELS[e.model] ?? e.model,
+      e.dataset,
+      e.epochs,
+      e.batch_size,
+      e.learning_rate,
+      (e.test_accuracy * 100).toFixed(4),
+      e.test_loss.toFixed(6),
+      e.note ?? '',
+      new Date(e.created_at).toLocaleString('pl-PL'),
+    ])
+    downloadCsv(`historia_${csvDate()}.csv`, [header, ...body])
+  }
+
   const selectedArr = Array.from(selected)
   const allSelected = experiments.length > 0 && selected.size === experiments.length
 
@@ -106,6 +125,11 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
               onClick={() => onCompareSelected(selectedArr)}
             >
               Porównaj wybrane ({selected.size})
+            </button>
+          )}
+          {experiments.length > 0 && (
+            <button className="btn-outline" onClick={exportCsv}>
+              Eksportuj CSV
             </button>
           )}
           <button className="btn-outline" onClick={fetchHistory}>

@@ -3,6 +3,7 @@ import { runCompare } from '../../api/client'
 import { DATASETS, MODEL_COLORS, MODEL_LABELS } from '../../types/api'
 import type { CompareResult } from '../../types/api'
 import LossChart from './LossChart'
+import { downloadCsv, csvDate } from '../../utils/csv'
 
 export default function CompareAllView() {
   const [dataset, setDataset] = useState('mnist')
@@ -35,6 +36,22 @@ export default function CompareAllView() {
   const sortedResults = result
     ? [...result.results].sort((a, b) => b.test_accuracy - a.test_accuracy)
     : []
+
+  function exportCsv() {
+    if (!result) return
+    const header = ['Miejsce', 'Model', 'Dokładność test.', 'Strata test.', 'Ost. strata trenin.',
+                    'Zbiór danych', 'Epoki']
+    const body = sortedResults.map((r, i) => [
+      i + 1,
+      MODEL_LABELS[r.model] ?? r.model,
+      (r.test_accuracy * 100).toFixed(4),
+      r.test_loss.toFixed(6),
+      r.train_loss_per_epoch.at(-1)?.toFixed(6) ?? '',
+      result.dataset,
+      result.epochs,
+    ])
+    downloadCsv(`porownanie_wszystkich_${csvDate()}.csv`, [header, ...body])
+  }
 
   return (
     <div className="view">
@@ -116,10 +133,15 @@ export default function CompareAllView() {
       {result && (
         <>
           <div className="card">
-            <h3 className="result-title">
-              Wyniki — {result.dataset.toUpperCase()}, {result.epochs}{' '}
-              {result.epochs === 1 ? 'epoka' : 'epok'}
-            </h3>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+              <h3 className="result-title" style={{ margin: 0 }}>
+                Wyniki — {result.dataset.toUpperCase()}, {result.epochs}{' '}
+                {result.epochs === 1 ? 'epoka' : 'epok'}
+              </h3>
+              <button className="btn-sm btn-outline" onClick={exportCsv}>
+                Eksportuj CSV
+              </button>
+            </div>
             <table className="data-table">
               <thead>
                 <tr>
