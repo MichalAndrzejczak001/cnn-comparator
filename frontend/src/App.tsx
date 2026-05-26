@@ -1,6 +1,18 @@
 import { useState } from 'react'
 import LandingPage from './components/LandingPage'
+import Dashboard from './components/dashboard/Dashboard'
 import './App.css'
+
+function decodeJwtSub(token: string): string {
+  try {
+    const payload = JSON.parse(
+      atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))
+    )
+    return (payload.sub as string) || 'user'
+  } catch {
+    return 'user'
+  }
+}
 
 function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'))
@@ -19,15 +31,7 @@ function App() {
     return <LandingPage onAuth={handleAuth} />
   }
 
-  return (
-    <div className="dashboard-placeholder">
-      <h1>CNN Comparator</h1>
-      <p>Zalogowano pomyślnie.</p>
-      <button className="btn-outline" onClick={handleLogout}>
-        Wyloguj się
-      </button>
-    </div>
-  )
+  return <Dashboard username={decodeJwtSub(token)} onLogout={handleLogout} />
 }
 
 export default App

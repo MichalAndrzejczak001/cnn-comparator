@@ -6,6 +6,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/auth': 'http://localhost:8080',
+      '/experiments': 'http://localhost:8080',
+      '/compare': 'http://localhost:8080',
     },
   },
 })
