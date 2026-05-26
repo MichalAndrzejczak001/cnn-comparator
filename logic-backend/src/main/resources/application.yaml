@@ -7,3 +7,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
+ai-backend:
+  url: http://ai-backend:8000 

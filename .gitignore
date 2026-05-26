@@ -56,3 +56,6 @@ sketch
 
 # Moje - env
 .env
+
+# Moje - claude
+.claude/settings.local.json
