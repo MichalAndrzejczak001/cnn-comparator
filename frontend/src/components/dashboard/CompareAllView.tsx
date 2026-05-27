@@ -3,6 +3,7 @@ import { runCompare } from '../../api/client'
 import { DATASETS, MODEL_COLORS, MODEL_LABELS } from '../../types/api'
 import type { CompareResult } from '../../types/api'
 import LossChart from './LossChart'
+import AccuracyTimeChart from './AccuracyTimeChart'
 import { downloadCsv, csvDate } from '../../utils/csv'
 
 export default function CompareAllView() {
@@ -40,13 +41,14 @@ export default function CompareAllView() {
   function exportCsv() {
     if (!result) return
     const header = ['Miejsce', 'Model', 'Dokładność test.', 'Strata test.', 'Ost. strata trenin.',
-                    'Zbiór danych', 'Epoki']
+                    'Czas treningu (s)', 'Zbiór danych', 'Epoki']
     const body = sortedResults.map((r, i) => [
       i + 1,
       MODEL_LABELS[r.model] ?? r.model,
       (r.test_accuracy * 100).toFixed(4),
       r.test_loss.toFixed(6),
       r.train_loss_per_epoch.at(-1)?.toFixed(6) ?? '',
+      r.training_time_seconds,
       result.dataset,
       result.epochs,
     ])
@@ -150,6 +152,7 @@ export default function CompareAllView() {
                   <th>Dokł. testowa</th>
                   <th>Strata testowa</th>
                   <th>Ost. strata trenin.</th>
+                  <th>Czas treningu</th>
                 </tr>
               </thead>
               <tbody>
@@ -194,6 +197,7 @@ export default function CompareAllView() {
                       </td>
                       <td>{r.test_loss.toFixed(4)}</td>
                       <td>{lastLoss != null ? lastLoss.toFixed(4) : '—'}</td>
+                      <td className="text-muted">{r.training_time_seconds}s</td>
                     </tr>
                   )
                 })}
@@ -210,6 +214,7 @@ export default function CompareAllView() {
                 color: MODEL_COLORS[r.model] || '#888',
               }))}
             />
+            <AccuracyTimeChart results={result.results} />
           </div>
         </>
       )}

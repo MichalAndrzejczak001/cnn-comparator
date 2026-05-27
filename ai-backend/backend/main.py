@@ -34,7 +34,7 @@ def run_experiment(config: ExperimentConfig):
         lr=config.training.learning_rate
     )
 
-    train_loss = train(
+    train_loss, training_time = train(
         model,
         train_loader,
         config.training.epochs,
@@ -52,7 +52,9 @@ def run_experiment(config: ExperimentConfig):
         "status": "training and evaluation finished",
         "train_loss_per_epoch": train_loss,
         "test_loss": metrics["loss"],
-        "test_accuracy": metrics["accuracy"]
+        "test_accuracy": metrics["accuracy"],
+        "confusion_matrix": metrics["confusion_matrix"],
+        "training_time_seconds": training_time
     }
 
 @app.post("/compare")
@@ -80,7 +82,7 @@ def compare_models(config: CompareConfig):
             lr=config.training.learning_rate
         )
 
-        train_loss = train(
+        train_loss, training_time = train(
             model,
             train_loader,
             config.training.epochs,
@@ -98,7 +100,8 @@ def compare_models(config: CompareConfig):
             "model": model_name,
             "train_loss_per_epoch": train_loss,
             "test_loss": metrics["loss"],
-            "test_accuracy": metrics["accuracy"]
+            "test_accuracy": metrics["accuracy"],
+            "training_time_seconds": training_time
         })
 
     return {

@@ -3,6 +3,7 @@ package spring.project.thesis.logicbackend.experiment;
 import jakarta.persistence.*;
 import lombok.*;
 import spring.project.thesis.logicbackend.config.DoubleListConverter;
+import spring.project.thesis.logicbackend.config.IntMatrixConverter;
 import spring.project.thesis.logicbackend.user.User;
 
 import java.time.LocalDateTime;
@@ -37,6 +38,12 @@ public class Experiment {
 
     private double testLoss;
     private double testAccuracy;
+
+    private double trainingTimeSeconds;
+
+    @Convert(converter = IntMatrixConverter.class)
+    @Column(columnDefinition = "TEXT")
+    private List<List<Integer>> confusionMatrix;
 
     @Column(length = 1000)
     private String note;

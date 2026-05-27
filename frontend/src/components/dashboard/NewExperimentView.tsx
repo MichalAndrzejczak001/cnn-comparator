@@ -3,6 +3,8 @@ import { runExperiment } from '../../api/client'
 import { MODELS, DATASETS, MODEL_COLORS, MODEL_LABELS } from '../../types/api'
 import type { ExperimentResponse } from '../../types/api'
 import LossChart from './LossChart'
+import ConfusionMatrix from './ConfusionMatrix'
+import ClassMetrics from './ClassMetrics'
 
 export default function NewExperimentView() {
   const [model, setModel] = useState('simple_cnn')
@@ -153,6 +155,10 @@ export default function NewExperimentView() {
               <div className="stat-value">{result.learning_rate}</div>
               <div className="stat-label">Learning rate</div>
             </div>
+            <div className="stat-box">
+              <div className="stat-value">{result.training_time_seconds}s</div>
+              <div className="stat-label">Czas treningu</div>
+            </div>
           </div>
           <LossChart
             title="Strata treningowa per epoka"
@@ -164,6 +170,12 @@ export default function NewExperimentView() {
               },
             ]}
           />
+          {result.confusion_matrix && (
+            <>
+              <ConfusionMatrix matrix={result.confusion_matrix} dataset={result.dataset} />
+              <ClassMetrics matrix={result.confusion_matrix} dataset={result.dataset} />
+            </>
+          )}
         </div>
       )}
     </div>

@@ -16,4 +16,7 @@ public class ModelResult {
 
     @JsonProperty("test_accuracy")
     private double testAccuracy;
+
+    @JsonProperty("training_time_seconds")
+    private double trainingTimeSeconds;
 }

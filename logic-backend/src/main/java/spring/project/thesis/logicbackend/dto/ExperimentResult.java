@@ -16,4 +16,10 @@ public class ExperimentResult {
 
     @JsonProperty("test_accuracy")
     private double testAccuracy;
+
+    @JsonProperty("confusion_matrix")
+    private List<List<Integer>> confusionMatrix;
+
+    @JsonProperty("training_time_seconds")
+    private double trainingTimeSeconds;
 }

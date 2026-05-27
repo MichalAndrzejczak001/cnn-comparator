@@ -20,6 +20,8 @@ export interface ExperimentResponse {
   train_loss_per_epoch: number[]
   test_loss: number
   test_accuracy: number
+  training_time_seconds: number
+  confusion_matrix: number[][] | null
   note: string | null
   created_at: string
 }
@@ -29,6 +31,7 @@ export interface ModelResult {
   train_loss_per_epoch: number[]
   test_loss: number
   test_accuracy: number
+  training_time_seconds: number
 }
 
 export interface CompareResult {

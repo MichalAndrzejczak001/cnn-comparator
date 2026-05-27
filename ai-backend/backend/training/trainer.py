@@ -1,3 +1,4 @@
+import time
 import torch
 import torch.nn as nn
 
@@ -7,6 +8,7 @@ def train(model, loader, epochs, optimizer, device="cpu"):
     model.train()
     criterion = nn.CrossEntropyLoss()
     history = []
+    start = time.time()
 
     for epoch in range(epochs):
         total_loss = 0.0
@@ -25,7 +27,8 @@ def train(model, loader, epochs, optimizer, device="cpu"):
         avg_loss = total_loss / len(loader)
         history.append(avg_loss)
 
-    return history
+    training_time = round(time.time() - start, 2)
+    return history, training_time
 
 
 def evaluate(model, loader, device="cpu"):
@@ -36,6 +39,8 @@ def evaluate(model, loader, device="cpu"):
     total_loss = 0.0
     correct = 0
     total = 0
+    all_preds = []
+    all_labels = []
 
     with torch.no_grad():
         for x, y in loader:
@@ -49,12 +54,21 @@ def evaluate(model, loader, device="cpu"):
             correct += (preds == y).sum().item()
             total += y.size(0)
 
+            all_preds.extend(preds.cpu().tolist())
+            all_labels.extend(y.cpu().tolist())
+
+    num_classes = max(max(all_labels), max(all_preds)) + 1
+    matrix = [[0] * num_classes for _ in range(num_classes)]
+    for true, pred in zip(all_labels, all_preds):
+        matrix[true][pred] += 1
+
     avg_loss = total_loss / len(loader)
     accuracy = correct / total
 
     return {
         "loss": avg_loss,
-        "accuracy": accuracy
+        "accuracy": accuracy,
+        "confusion_matrix": matrix
     }
 
 

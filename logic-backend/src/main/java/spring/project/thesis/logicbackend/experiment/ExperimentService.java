@@ -49,6 +49,8 @@ public class ExperimentService {
                 .trainLossPerEpoch(result.getTrainLossPerEpoch())
                 .testLoss(result.getTestLoss())
                 .testAccuracy(result.getTestAccuracy())
+                .trainingTimeSeconds(result.getTrainingTimeSeconds())
+                .confusionMatrix(result.getConfusionMatrix())
                 .createdAt(LocalDateTime.now())
                 .build());
 

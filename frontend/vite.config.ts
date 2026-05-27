@@ -5,9 +5,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/auth': 'http://localhost:8080',
-      '/experiments': 'http://localhost:8080',
-      '/compare': 'http://localhost:8080',
+      '/auth': 'http://logic-backend:8080',
+      '/experiments': 'http://logic-backend:8080',
+      '/compare': 'http://logic-backend:8080',
     },
   },
 })

@@ -32,6 +32,12 @@ public class ExperimentResponse {
     @JsonProperty("test_accuracy")
     private double testAccuracy;
 
+    @JsonProperty("training_time_seconds")
+    private double trainingTimeSeconds;
+
+    @JsonProperty("confusion_matrix")
+    private List<List<Integer>> confusionMatrix;
+
     private String note;
 
     @JsonProperty("created_at")
@@ -48,6 +54,8 @@ public class ExperimentResponse {
                 .trainLossPerEpoch(experiment.getTrainLossPerEpoch())
                 .testLoss(experiment.getTestLoss())
                 .testAccuracy(experiment.getTestAccuracy())
+                .trainingTimeSeconds(experiment.getTrainingTimeSeconds())
+                .confusionMatrix(experiment.getConfusionMatrix())
                 .note(experiment.getNote())
                 .createdAt(experiment.getCreatedAt())
                 .build();
