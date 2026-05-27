@@ -4,6 +4,8 @@ import { DATASETS, MODEL_COLORS, MODEL_LABELS } from '../../types/api'
 import type { CompareResult } from '../../types/api'
 import LossChart from './LossChart'
 import AccuracyTimeChart from './AccuracyTimeChart'
+import RadarChart from './RadarChart'
+import CompareClassMetrics from './CompareClassMetrics'
 import { downloadCsv, csvDate } from '../../utils/csv'
 
 export default function CompareAllView() {
@@ -214,7 +216,26 @@ export default function CompareAllView() {
                 color: MODEL_COLORS[r.model] || '#888',
               }))}
             />
+            <LossChart
+              title="Strata testowa per epoka — porównanie modeli"
+              series={result.results
+                .filter(r => r.test_loss_per_epoch)
+                .map((r) => ({
+                  label: MODEL_LABELS[r.model] || r.model,
+                  data: r.test_loss_per_epoch!,
+                  color: MODEL_COLORS[r.model] || '#888',
+                  dashed: true,
+                }))}
+            />
             <AccuracyTimeChart results={result.results} />
+          </div>
+
+          <div className="card">
+            <RadarChart results={result.results} />
+          </div>
+
+          <div className="card">
+            <CompareClassMetrics results={result.results} dataset={result.dataset} />
           </div>
         </>
       )}

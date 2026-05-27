@@ -11,6 +11,9 @@ public class ExperimentResult {
     @JsonProperty("train_loss_per_epoch")
     private List<Double> trainLossPerEpoch;
 
+    @JsonProperty("test_loss_per_epoch")
+    private List<Double> testLossPerEpoch;
+
     @JsonProperty("test_loss")
     private double testLoss;
 

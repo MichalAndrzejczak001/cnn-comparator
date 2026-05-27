@@ -47,6 +47,7 @@ public class ExperimentService {
                 .batchSize(request.getTraining().getBatchSize())
                 .learningRate(request.getTraining().getLearningRate())
                 .trainLossPerEpoch(result.getTrainLossPerEpoch())
+                .testLossPerEpoch(result.getTestLossPerEpoch())
                 .testLoss(result.getTestLoss())
                 .testAccuracy(result.getTestAccuracy())
                 .trainingTimeSeconds(result.getTrainingTimeSeconds())

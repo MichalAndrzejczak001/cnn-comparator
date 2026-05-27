@@ -161,13 +161,19 @@ export default function NewExperimentView() {
             </div>
           </div>
           <LossChart
-            title="Strata treningowa per epoka"
+            title="Krzywa uczenia"
             series={[
               {
-                label: MODEL_LABELS[result.model],
+                label: `${MODEL_LABELS[result.model]} — trening`,
                 data: result.train_loss_per_epoch,
                 color,
               },
+              ...(result.test_loss_per_epoch ? [{
+                label: `${MODEL_LABELS[result.model]} — test`,
+                data: result.test_loss_per_epoch,
+                color,
+                dashed: true,
+              }] : []),
             ]}
           />
           {result.confusion_matrix && (

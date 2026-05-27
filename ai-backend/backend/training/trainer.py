@@ -3,32 +3,36 @@ import torch
 import torch.nn as nn
 
 
-def train(model, loader, epochs, optimizer, device="cpu"):
+def train(model, loader, test_loader, epochs, optimizer, device="cpu"):
     model.to(device)
-    model.train()
     criterion = nn.CrossEntropyLoss()
-    history = []
+    train_history = []
+    test_history = []
     start = time.time()
 
     for epoch in range(epochs):
+        model.train()
         total_loss = 0.0
-
         for x, y in loader:
             x, y = x.to(device), y.to(device)
-
             optimizer.zero_grad()
             outputs = model(x)
             loss = criterion(outputs, y)
             loss.backward()
             optimizer.step()
-
             total_loss += loss.item()
+        train_history.append(round(total_loss / len(loader), 6))
 
-        avg_loss = total_loss / len(loader)
-        history.append(avg_loss)
+        model.eval()
+        test_loss = 0.0
+        with torch.no_grad():
+            for x, y in test_loader:
+                x, y = x.to(device), y.to(device)
+                test_loss += criterion(model(x), y).item()
+        test_history.append(round(test_loss / len(test_loader), 6))
 
     training_time = round(time.time() - start, 2)
-    return history, training_time
+    return train_history, test_history, training_time
 
 
 def evaluate(model, loader, device="cpu"):

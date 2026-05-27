@@ -26,6 +26,9 @@ public class ExperimentResponse {
     @JsonProperty("train_loss_per_epoch")
     private List<Double> trainLossPerEpoch;
 
+    @JsonProperty("test_loss_per_epoch")
+    private List<Double> testLossPerEpoch;
+
     @JsonProperty("test_loss")
     private double testLoss;
 
@@ -52,6 +55,7 @@ public class ExperimentResponse {
                 .batchSize(experiment.getBatchSize())
                 .learningRate(experiment.getLearningRate())
                 .trainLossPerEpoch(experiment.getTrainLossPerEpoch())
+                .testLossPerEpoch(experiment.getTestLossPerEpoch())
                 .testLoss(experiment.getTestLoss())
                 .testAccuracy(experiment.getTestAccuracy())
                 .trainingTimeSeconds(experiment.getTrainingTimeSeconds())

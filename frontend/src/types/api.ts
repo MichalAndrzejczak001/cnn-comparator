@@ -18,6 +18,7 @@ export interface ExperimentResponse {
   batch_size: number
   learning_rate: number
   train_loss_per_epoch: number[]
+  test_loss_per_epoch: number[] | null
   test_loss: number
   test_accuracy: number
   training_time_seconds: number
@@ -29,9 +30,11 @@ export interface ExperimentResponse {
 export interface ModelResult {
   model: string
   train_loss_per_epoch: number[]
+  test_loss_per_epoch: number[] | null
   test_loss: number
   test_accuracy: number
   training_time_seconds: number
+  confusion_matrix: number[][] | null
 }
 
 export interface CompareResult {

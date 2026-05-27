@@ -2,6 +2,7 @@ interface Series {
   label: string
   data: number[]
   color: string
+  dashed?: boolean
 }
 
 interface LossChartProps {
@@ -93,12 +94,13 @@ export default function LossChart({ series, title }: LossChartProps) {
 
           return (
             <g key={s.label}>
-              <path d={areaD} fill={s.color} fillOpacity="0.07" />
+              {!s.dashed && <path d={areaD} fill={s.color} fillOpacity="0.07" />}
               <path
                 d={pathD}
                 fill="none"
                 stroke={s.color}
                 strokeWidth="2.2"
+                strokeDasharray={s.dashed ? '6,3' : undefined}
                 strokeLinejoin="round"
                 strokeLinecap="round"
               />

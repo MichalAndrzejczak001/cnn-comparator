@@ -36,6 +36,10 @@ public class Experiment {
     @Column(columnDefinition = "TEXT")
     private List<Double> trainLossPerEpoch;
 
+    @Convert(converter = DoubleListConverter.class)
+    @Column(columnDefinition = "TEXT")
+    private List<Double> testLossPerEpoch;
+
     private double testLoss;
     private double testAccuracy;
 

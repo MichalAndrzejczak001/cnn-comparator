@@ -34,9 +34,10 @@ def run_experiment(config: ExperimentConfig):
         lr=config.training.learning_rate
     )
 
-    train_loss, training_time = train(
+    train_loss, test_loss_per_epoch, training_time = train(
         model,
         train_loader,
+        test_loader,
         config.training.epochs,
         optimizer,
         device=device
@@ -51,6 +52,7 @@ def run_experiment(config: ExperimentConfig):
     return {
         "status": "training and evaluation finished",
         "train_loss_per_epoch": train_loss,
+        "test_loss_per_epoch": test_loss_per_epoch,
         "test_loss": metrics["loss"],
         "test_accuracy": metrics["accuracy"],
         "confusion_matrix": metrics["confusion_matrix"],
@@ -82,9 +84,10 @@ def compare_models(config: CompareConfig):
             lr=config.training.learning_rate
         )
 
-        train_loss, training_time = train(
+        train_loss, test_loss_per_epoch, training_time = train(
             model,
             train_loader,
+            test_loader,
             config.training.epochs,
             optimizer,
             device=device
@@ -99,9 +102,11 @@ def compare_models(config: CompareConfig):
         results.append({
             "model": model_name,
             "train_loss_per_epoch": train_loss,
+            "test_loss_per_epoch": test_loss_per_epoch,
             "test_loss": metrics["loss"],
             "test_accuracy": metrics["accuracy"],
-            "training_time_seconds": training_time
+            "training_time_seconds": training_time,
+            "confusion_matrix": metrics["confusion_matrix"]
         })
 
     return {
