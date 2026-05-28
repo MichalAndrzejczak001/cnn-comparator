@@ -1,0 +1,88 @@
+JAVA TESTY JEDNOSTKOWE
+
+Wszystkie 25 testów przeszło. Oto co zostało napisane:
+
+  ---
+  JwtServiceTest — 6 testów
+
+  - Token nie jest null i ma 3 części (format JWT)
+  - extractUsername zwraca poprawny username
+  - Token jest ważny zaraz po wygenerowaniu
+  - Różni użytkownicy → różne tokeny
+  - Zmodyfikowany token rzuca wyjątek
+
+  AuthServiceTest — 6 testów
+
+  - register zapisuje użytkownika do repozytorium
+  - register hashuje hasło (nie zapisuje plaintext)
+  - register przypisuje rolę USER
+  - register zwraca token z JwtService
+  - login przekazuje dane do AuthenticationManager
+  - login rzuca wyjątek gdy złe hasło
+
+  ExperimentServiceTest — 13 testów
+
+  - getHistory zwraca eksperymenty w odpowiedniej kolejności / pustą listę
+  - compareExperiments — happy path, NOT_FOUND, FORBIDDEN (cudzego eksperymentu)
+  - rerunExperiment — NOT_FOUND, FORBIDDEN, wywołuje AI backend z oryginalnymi parametrami
+  - updateNote — aktualizuje i zapisuje, NOT_FOUND, FORBIDDEN
+  - runExperiment — zapisuje eksperyment z poprawnymi polami
+
+● Testy zostały napisane przy użyciu:
+
+  - JUnit 5 — framework testowy (adnotacje @Test, @BeforeEach, @AfterEach)
+  - Mockito — mockowanie zależności (@Mock, @InjectMocks, @ExtendWith(MockitoExtension.class), when(), verify(), ArgumentCaptor, lenient())
+  - AssertJ — asercje (assertThat(...).isEqualTo(...), assertThatThrownBy(...))
+  - Spring Test — ReflectionTestUtils.setField() do wstrzyknięcia @Value, SecurityContextHolder do ustawienia zalogowanego użytkownika
+
+  Wszystkie te biblioteki są dostępne bez dodawania nowych zależności — wchodzą w skład spring-boot-starter-webmvc-test który już był w build.gradle.
+
+--------------------------------------------------------------------------------------------
+JAVA TESTY INTEGRACYJNE
+
+ Wszystkie 22 testy przechodzą. Oto podsumowanie co zostało napisane i jakie problemy napotkałem:
+
+  ---
+  AuthControllerIntegrationTest — 7 testów
+
+  - POST /auth/register — zapisuje token, zapisuje użytkownika w bazie
+  - POST /auth/register duplikat — rzuca DataIntegrityViolationException
+  - POST /auth/login — poprawne dane, błędne hasło, nieistniejący użytkownik
+  - Chroniony endpoint bez tokenu → 4xx, z nieprawidłowym tokenem → 401
+
+  ExperimentControllerIntegrationTest — 15 testów
+
+  - GET /experiments — pusta lista, tylko eksperymenty aktualnego użytkownika, brak tokenu → 4xx
+  - POST /experiments — zapisuje wynik, mockuje AI backend przez MockRestServiceServer, brak tokenu → 4xx
+  - POST /experiments/compare — własne eksperymenty OK, cudzy → 403, nieistniejący → 404
+  - POST /experiments/{id}/rerun — tworzy nowy wpis, cudzy → 403, nieistniejący → 404
+  - PATCH /experiments/{id}/note — zapisuje notatkę do bazy, cudzy → 403, nieistniejący → 404
+
+  ---
+  Co było trudne w Spring Boot 4
+
+  Trzy zmiany względem Spring Boot 3:
+  - @AutoConfigureMockMvc → nowy pakiet org.springframework.boot.webmvc.test.autoconfigure
+  - ObjectMapper → nowy pakiet tools.jackson.databind (Jackson 3.x)
+  - Brak spring-boot-starter-test w domyślnych zależnościach projektu — trzeba było dodać ręcznie
+
+● Testy integracyjne zostały napisane przy użyciu:
+
+  - JUnit 5 — framework testowy (@Test, @BeforeEach)
+  - Spring Boot Test (@SpringBootTest) — ładuje pełny kontekst aplikacji
+  - MockMvc (@AutoConfigureMockMvc) — symuluje żądania HTTP bez uruchamiania serwera
+  - MockRestServiceServer — przechwytuje wywołania RestTemplate do AI backendu i zwraca zdefiniowane odpowiedzi JSON
+  - AssertJ — asercje (assertThat, assertThatThrownBy)
+  - Hamcrest — dopasowania w jsonPath (hasSize)
+  - H2 — baza danych in-memory zamiast MySQL, uruchamiana tylko na czas testów
+  - Spring Security Test — JWT token generowany przez JwtService i przekazywany w nagłówku Authorization: Bearer
+
+  Konfiguracja testowa w application-test.yaml (profil @ActiveProfiles("test")) nadpisuje połączenie z MySQL na H2 z ddl-auto: create-drop, dzięki czemu schemat jest tworzony i niszczony automatycznie.
+
+--------------------------------------------------------------------------------------------
+PYTHON TESTY JEDNOSTKOWE
+
+
+
+--------------------------------------------------------------------------------------------
+PYTHON TESTY INTEGRACYJNE
