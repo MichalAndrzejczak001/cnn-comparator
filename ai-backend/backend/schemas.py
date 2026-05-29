@@ -26,3 +26,9 @@ class PredictResponse(BaseModel):
     predicted_index: int
     confidences: List[ClassConfidence]
 
+class GradCamResponse(BaseModel):
+    predicted_class: str
+    predicted_index: int
+    confidences: List[ClassConfidence]
+    gradcam_image: str
+

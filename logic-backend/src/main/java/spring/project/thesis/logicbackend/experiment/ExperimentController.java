@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import spring.project.thesis.logicbackend.dto.ClassifyResponse;
+import spring.project.thesis.logicbackend.dto.GradCamResponse;
 import spring.project.thesis.logicbackend.dto.NoteRequest;
 import spring.project.thesis.logicbackend.dto.CompareExperimentsRequest;
 import spring.project.thesis.logicbackend.dto.CompareRequest;
@@ -58,6 +59,14 @@ public class ExperimentController {
             @RequestParam("file") MultipartFile file
     ) {
         return experimentService.classifyImage(id, file);
+    }
+
+    @PostMapping("/experiments/{id}/gradcam")
+    public GradCamResponse gradCam(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file
+    ) {
+        return experimentService.gradCam(id, file);
     }
 
     @PostMapping("/compare")

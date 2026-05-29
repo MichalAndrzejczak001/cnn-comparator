@@ -39,6 +39,13 @@ export interface ClassifyResponse {
   confidences: ClassConfidence[]
 }
 
+export interface GradCamResponse {
+  predicted_class: string
+  predicted_index: number
+  confidences: ClassConfidence[]
+  gradcam_image: string
+}
+
 export interface ModelResult {
   model: string
   train_loss_per_epoch: number[]

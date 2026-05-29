@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import spring.project.thesis.logicbackend.dto.ClassifyResponse;
+import spring.project.thesis.logicbackend.dto.GradCamResponse;
 import spring.project.thesis.logicbackend.dto.CompareExperimentsRequest;
 import spring.project.thesis.logicbackend.dto.CompareRequest;
 import spring.project.thesis.logicbackend.dto.CompareResult;
@@ -153,6 +154,42 @@ public class ExperimentService {
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             return restTemplate.postForObject(aiBackendUrl + "/predict", requestEntity, ClassifyResponse.class);
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to read image file");
+        }
+    }
+
+    public GradCamResponse gradCam(Long experimentId, MultipartFile file) {
+        Experiment experiment = experimentRepository.findById(experimentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!experiment.getUser().getId().equals(currentUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        if (experiment.getModelId() == null) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "No saved model for this experiment");
+        }
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("model_name", experiment.getModel());
+            body.add("dataset", experiment.getDataset());
+            body.add("model_id", experiment.getModelId());
+
+            ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return file.getOriginalFilename();
+                }
+            };
+            body.add("file", fileResource);
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            return restTemplate.postForObject(aiBackendUrl + "/gradcam", requestEntity, GradCamResponse.class);
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to read image file");
         }

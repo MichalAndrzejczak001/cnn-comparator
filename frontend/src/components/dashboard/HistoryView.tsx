@@ -4,6 +4,7 @@ import type { ExperimentResponse } from '../../types/api'
 import { MODEL_LABELS } from '../../types/api'
 import { downloadCsv, csvDate } from '../../utils/csv'
 import ClassifyImageModal from './ClassifyImageModal'
+import GradCamModal from './GradCamModal'
 
 interface HistoryViewProps {
   onCompareSelected: (ids: number[]) => void
@@ -30,6 +31,7 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [noteModal, setNoteModal] = useState<NoteModal | null>(null)
   const [classifyModal, setClassifyModal] = useState<ClassifyModal | null>(null)
+  const [gradCamModal, setGradCamModal] = useState<ClassifyModal | null>(null)
   const [rerunning, setRerunning] = useState<number | null>(null)
   const [savingNote, setSavingNote] = useState(false)
   const [error, setError] = useState('')
@@ -229,6 +231,14 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
                           Klasyfikuj
                         </button>
                       )}
+                      {exp.model_id && (
+                        <button
+                          className="btn-sm btn-outline"
+                          onClick={() => setGradCamModal({ id: exp.id, model: exp.model, dataset: exp.dataset })}
+                        >
+                          Grad-CAM
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -244,6 +254,15 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
           model={classifyModal.model}
           dataset={classifyModal.dataset}
           onClose={() => setClassifyModal(null)}
+        />
+      )}
+
+      {gradCamModal && (
+        <GradCamModal
+          experimentId={gradCamModal.id}
+          model={gradCamModal.model}
+          dataset={gradCamModal.dataset}
+          onClose={() => setGradCamModal(null)}
         />
       )}
 
