@@ -144,3 +144,74 @@ PYTHON TESTY INTEGRACYJNE
   create_model celowo nie jest mockowany — każdy test tworzy prawdziwy model PyTorch, co przy okazji weryfikuje fabrykę modeli.
 
 --------------------------------------------------------------------------------------------
+FRONTEND TESTY JEDNOSTKOWE
+
+● 34/34 testów przechodzi. Oto co zostało stworzone:
+
+  Setup (3 pliki konfiguracyjne):
+  - vite.config.ts — dodano blok test: { environment: 'jsdom', setupFiles, globals: true }
+  - src/setupTests.ts — importuje @testing-library/jest-dom
+  - package.json — dodano skrypty test i test:watch
+
+  ---
+  src/utils/csv.test.ts — 9 testów czystych funkcji:
+  - csvDate(): format YYYY-MM-DD, poprawna data dzisiejsza
+  - downloadCsv(): BOM na początku, cudzysłowy wokół komórek, escapowanie " jako "", separator \r\n, liczby jako stringi, poprawna nazwa pliku, wywołanie click()
+
+  src/api/client.test.ts — 14 testów:
+  - Nagłówek Authorization dołączany gdy token w localStorage, pomijany bez tokena
+  - Rzucanie błędem z treścią serwera lub fallback HTTP 500
+  - Każda funkcja (getExperiments, runExperiment, rerunExperiment, compareExperiments, updateNote, runCompare): poprawny URL, metoda HTTP, body żądania
+
+  src/App.test.tsx — 5 testów komponentu:
+  - Renderuje LandingPage gdy brak tokena
+  - Renderuje Dashboard gdy token w localStorage
+  - Dekoduje username z JWT sub
+  - Fallback "user" dla niepoprawnego tokena i braku sub
+
+  src/components/dashboard/HistoryView.test.tsx — 8 testów:
+  - Stan ładowania, renderowanie wierszy, pusty stan, błąd API
+  - Przycisk „Porównaj wybrane" widoczny dopiero przy 2+ zaznaczonych
+  - Toggle-all zaznacza/odznacza wszystkie eksperymenty
+
+✻ Baked for 8m 49s
+
+❯ Jakich narzędzi użyto?
+
+● Vitest — test runner natywny dla Vite, zamiennik Jest. Uruchamia testy przez npm test.
+
+  @testing-library/react — renderuje komponenty React w jsdom i udostępnia render(), screen, waitFor(). Pozwala testować komponenty od strony użytkownika (przez tekst, role, atrybuty), nie przez wewnętrzną strukturę.
+
+  @testing-library/user-event — symuluje realne interakcje użytkownika (user.click(), user.type()). Bardziej wiarygodne niż fireEvent, bo odtwarza sekwencję zdarzeń przeglądarki.
+
+  @testing-library/jest-dom — dodatkowe matchery do expect: toBeInTheDocument(), toHaveTextContent(), toBeDisabled() itp.
+
+  jsdom — środowisko DOM w Node.js, udostępnia document, localStorage, window. Vitest używa go zamiast prawdziwej przeglądarki.
+
+  vi (z Vitest) — narzędzia do mockowania:
+  - vi.mock('moduł') — podmienia cały moduł (użyte dla api/client i utils/csv w testach HistoryView)
+  - vi.stubGlobal('Blob', class MockBlob {...}) — podmienia globalny konstruktor Blob klasą (wymóg Vitest 4 — arrow function nie może być konstruktorem)
+  - vi.spyOn(document, 'createElement') — przechwytuje tworzenie elementu <a> w downloadCsv
+  - vi.mocked(fetch).mock.calls — inspekcja argumentów wywołań zamockowanego fetch
+
+--------------------------------------------------------------------------------------------
+TESTY E2E
+
+--------------------------------------------
+Pliki
+
+  ┌─────────────────────────────┬────────────────────────────────────────────────────────────────┐
+  │            Plik             │                              Opis                              │
+  ├─────────────────────────────┼────────────────────────────────────────────────────────────────┤
+  │ cypress.config.ts           │ Konfiguracja: baseURL, specPattern, supportFile                │
+  ├─────────────────────────────┼────────────────────────────────────────────────────────────────┤
+  │ cypress/tsconfig.json       │ TypeScript dla plików Cypress ("types": ["cypress"])           │
+  ├─────────────────────────────┼────────────────────────────────────────────────────────────────┤
+  │ cypress/support/e2e.ts      │ Plik support (automatycznie ładowany przed każdą specyfikacją) │
+  ├─────────────────────────────┼────────────────────────────────────────────────────────────────┤
+  │ cypress/support/helpers.ts  │ TEST_JWT, MOCK_EXPERIMENT, MOCK_EXPERIMENT_2                   │
+  ├─────────────────────────────┼────────────────────────────────────────────────────────────────┤
+  │ cypress/e2e/auth.cy.ts      │ 19 testów — landing page, modal, logowanie, rejestracja        │
+  ├─────────────────────────────┼────────────────────────────────────────────────────────────────┤
+  │ cypress/e2e/dashboard.cy.ts │ 16 testów — nawigacja, wylogowanie, historia, nowy eksperyment │
+  └─────────────────────────────┴────────────────────────────────────────────────────────────────┘
