@@ -82,7 +82,65 @@ JAVA TESTY INTEGRACYJNE
 --------------------------------------------------------------------------------------------
 PYTHON TESTY JEDNOSTKOWE
 
+● 34/34 tests pass. Here's what was created:
 
+  ai-backend/tests/test_models.py — 19 tests covering:
+  - TestCreateModel (5 tests): create_model() returns correct class for all 4 model names, raises ValueError for unknown name
+  - TestSimpleCNN (4 tests): output shape (batch, 10) for MNIST (1ch) and CIFAR-10 (3ch), custom num_classes, non-constant outputs
+  - TestLeNet5 (4 tests): same pattern
+  - TestVGG11 (3 tests): output shape for both datasets and custom classes
+  - TestResNet18 (3 tests): same
+
+  ai-backend/tests/test_trainer.py — 15 tests covering:
+  - TestEvaluate (9 tests): required keys in result, perfect/zero accuracy, accuracy bounds, non-negative loss, confusion matrix structure, matrix counts sum to total samples, diagonal values for perfect model
+  - TestTrain (6 tests): train_history and test_history length equals epochs, training time is non-negative, all loss values are positive floats
+
+  Tools used: pytest, PyTorch TensorDataset/DataLoader, a FixedPredictor helper (deterministic model for controlled accuracy tests) and TinyMLP (minimal trainable model for train() tests). conftest.py at the root handles the import path so from backend.models... works.
 
 --------------------------------------------------------------------------------------------
 PYTHON TESTY INTEGRACYJNE
+
+● 23/23 tests pass. Oto co zostało stworzone:
+
+  ai-backend/tests/test_api.py — 23 testy integracyjne pokrywające 3 endpointy:
+
+  TestHealthEndpoint (2 testy):
+  - GET /health zwraca 200 i {"status": "ok"}
+
+  TestExperimentsEndpoint (12 testów):
+  - Poprawne żądanie → 200, wszystkie wymagane pola w odpowiedzi
+  - train_loss_per_epoch i test_loss_per_epoch mają długość = liczba epok z żądania
+  - load_dataset i train wywoływane z parametrami z żądania (weryfikacja przez mock.assert_called_once_with)
+  - Niepoprawna nazwa modelu / datasetu → 422
+  - Brak wymaganego pola (model, dataset) → 422
+  - Wszystkie 4 modele i oba datasety są akceptowane
+
+  TestCompareEndpoint (9 testów):
+  - Zwraca 4 wyniki (po jednym na każdy model)
+  - Odpowiedź zawiera dataset i epochs
+  - Wszystkie 4 nazwy modeli są w wynikach
+  - Każdy wynik ma pełny zestaw pól
+  - Walidacja: zły dataset → 422, brak datasetu → 422
+
+  Strategia mockowania: load_dataset, train i evaluate są patchowane w @pytest.fixture, żeby testy nie pobierały MNIST/CIFAR-10 ani nie trenowały sieci. create_model jest niezmockowany — każdy test instantiuje prawdziwy model, co weryfikuje też poprawność fabryki modeli.
+
+✻ Worked for 2m 5s
+
+❯ Jakich narzędzi użyłeś?
+
+● Do testów integracyjnych ai-backendu użyłem:
+
+  pytest — framework testowy, fixture mock_deps do współdzielonego setupu mocków
+
+  FastAPI TestClient (z starlette) — uruchamia aplikację FastAPI in-process bez prawdziwego serwera HTTP, pozwala wysyłać żądania przez client.get() / client.post()
+
+  httpx — wymagana zależność TestClient (nowy Starlette używa httpx zamiast requests)
+
+  unittest.mock.patch — patchowanie trzech funkcji w module backend.main:
+  - load_dataset — żeby nie pobierało MNIST/CIFAR-10 z internetu
+  - train — żeby nie trenowało sieci neuronowej
+  - evaluate — żeby nie liczyło metryk na prawdziwych danych
+
+  create_model celowo nie jest mockowany — każdy test tworzy prawdziwy model PyTorch, co przy okazji weryfikuje fabrykę modeli.
+
+--------------------------------------------------------------------------------------------
