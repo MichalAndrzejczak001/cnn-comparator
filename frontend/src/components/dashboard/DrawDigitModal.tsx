@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { classifyImage } from '../../api/client'
-import type { ClassifyResponse } from '../../types/api'
+import { gradCamImage } from '../../api/client'
+import type { GradCamResponse } from '../../types/api'
 import { MODEL_LABELS } from '../../types/api'
 
 interface Props {
@@ -15,7 +15,8 @@ export default function DrawDigitModal({ experimentId, model, onClose }: Props) 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [drawing, setDrawing] = useState(false)
   const [hasDrawing, setHasDrawing] = useState(false)
-  const [result, setResult] = useState<ClassifyResponse | null>(null)
+  const [snapshot, setSnapshot] = useState<string | null>(null)
+  const [result, setResult] = useState<GradCamResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -53,6 +54,7 @@ export default function DrawDigitModal({ experimentId, model, onClose }: Props) 
     setDrawing(true)
     setHasDrawing(true)
     setResult(null)
+    setSnapshot(null)
     setError('')
   }
 
@@ -86,6 +88,7 @@ export default function DrawDigitModal({ experimentId, model, onClose }: Props) 
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
     setHasDrawing(false)
     setResult(null)
+    setSnapshot(null)
     setError('')
   }
 
@@ -95,6 +98,8 @@ export default function DrawDigitModal({ experimentId, model, onClose }: Props) 
     setLoading(true)
     setError('')
     setResult(null)
+    const dataUrl = canvas.toDataURL('image/png')
+    setSnapshot(dataUrl)
     canvas.toBlob(async (blob) => {
       if (!blob) {
         setError('Błąd eksportu canvas')
@@ -103,10 +108,10 @@ export default function DrawDigitModal({ experimentId, model, onClose }: Props) 
       }
       const file = new File([blob], 'drawing.png', { type: 'image/png' })
       try {
-        const res = await classifyImage(experimentId, file)
+        const res = await gradCamImage(experimentId, file)
         setResult(res)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Błąd klasyfikacji')
+        setError(err instanceof Error ? err.message : 'Błąd generowania Grad-CAM')
       } finally {
         setLoading(false)
       }
@@ -119,7 +124,7 @@ export default function DrawDigitModal({ experimentId, model, onClose }: Props) 
     <div className="modal-backdrop" onClick={onClose}>
       <div
         className="modal"
-        style={{ maxWidth: 540, width: '100%' }}
+        style={{ maxWidth: 580, width: '100%' }}
         onClick={e => e.stopPropagation()}
       >
         <div className="modal-header">
@@ -167,12 +172,31 @@ export default function DrawDigitModal({ experimentId, model, onClose }: Props) 
             disabled={!hasDrawing || loading}
             onClick={handleClassify}
           >
-            {loading ? 'Klasyfikowanie...' : 'Klasyfikuj'}
+            {loading ? 'Generowanie...' : 'Klasyfikuj + Grad-CAM'}
           </button>
         </div>
 
-        {result && (
+        {result && snapshot && (
           <div>
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.25rem', alignItems: 'flex-start' }}>
+              <div style={{ flex: 1, textAlign: 'center' }}>
+                <div style={{ color: '#64748b', fontSize: '0.75rem', marginBottom: '0.4rem' }}>Rysunek</div>
+                <img
+                  src={snapshot}
+                  alt="Rysunek"
+                  style={{ width: '100%', maxWidth: 180, borderRadius: 8, imageRendering: 'pixelated' }}
+                />
+              </div>
+              <div style={{ flex: 1, textAlign: 'center' }}>
+                <div style={{ color: '#64748b', fontSize: '0.75rem', marginBottom: '0.4rem' }}>Mapa aktywacji (Grad-CAM)</div>
+                <img
+                  src={`data:image/png;base64,${result.gradcam_image}`}
+                  alt="Grad-CAM"
+                  style={{ width: '100%', maxWidth: 180, borderRadius: 8, imageRendering: 'pixelated' }}
+                />
+              </div>
+            </div>
+
             <div style={{
               background: 'rgba(79,134,247,0.1)',
               border: '1px solid rgba(79,134,247,0.3)',
