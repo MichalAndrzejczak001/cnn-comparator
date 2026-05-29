@@ -22,6 +22,7 @@ os.makedirs(SAVED_MODELS_DIR, exist_ok=True)
 
 MNIST_CLASSES = [str(i) for i in range(10)]
 CIFAR10_CLASSES = ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"]
+FASHION_MNIST_CLASSES = ["T-shirt", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"]
 
 app = FastAPI(
     title="CNN Comparator API",
@@ -157,6 +158,14 @@ def predict(
             transforms.Resize((32, 32)),
             transforms.ToTensor(),
         ])
+    elif dataset == "fashion_mnist":
+        in_channels, input_size, num_classes = 1, (32, 32), 10
+        class_labels = FASHION_MNIST_CLASSES
+        transform = transforms.Compose([
+            transforms.Grayscale(num_output_channels=1),
+            transforms.Resize((32, 32)),
+            transforms.ToTensor(),
+        ])
     elif dataset == "cifar10":
         in_channels, input_size, num_classes = 3, (32, 32), 10
         class_labels = CIFAR10_CLASSES
@@ -258,6 +267,14 @@ def gradcam(
     if dataset == "mnist":
         in_channels, input_size, num_classes = 1, (32, 32), 10
         class_labels = MNIST_CLASSES
+        transform = transforms.Compose([
+            transforms.Grayscale(num_output_channels=1),
+            transforms.Resize((32, 32)),
+            transforms.ToTensor(),
+        ])
+    elif dataset == "fashion_mnist":
+        in_channels, input_size, num_classes = 1, (32, 32), 10
+        class_labels = FASHION_MNIST_CLASSES
         transform = transforms.Compose([
             transforms.Grayscale(num_output_channels=1),
             transforms.Resize((32, 32)),

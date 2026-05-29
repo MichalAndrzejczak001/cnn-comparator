@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { runCompare } from '../../api/client'
-import { DATASETS, MODEL_COLORS, MODEL_LABELS } from '../../types/api'
+import { DATASETS, MODEL_COLORS, MODEL_LABELS, DATASET_LABELS } from '../../types/api'
 import type { CompareResult } from '../../types/api'
 import LossChart from './LossChart'
 import AccuracyTimeChart from './AccuracyTimeChart'
@@ -76,7 +76,7 @@ export default function CompareAllView() {
               >
                 {DATASETS.map((d) => (
                   <option key={d} value={d}>
-                    {d.toUpperCase()}
+                    {DATASET_LABELS[d] ?? d.toUpperCase()}
                   </option>
                 ))}
               </select>
@@ -139,7 +139,7 @@ export default function CompareAllView() {
           <div className="card">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
               <h3 className="result-title" style={{ margin: 0 }}>
-                Wyniki — {result.dataset.toUpperCase()}, {result.epochs}{' '}
+                Wyniki — {DATASET_LABELS[result.dataset] ?? result.dataset.toUpperCase()}, {result.epochs}{' '}
                 {result.epochs === 1 ? 'epoka' : 'epok'}
               </h3>
               <button className="btn-sm btn-outline" onClick={exportCsv}>

@@ -1,4 +1,4 @@
-from torchvision.datasets import MNIST, CIFAR10
+from torchvision.datasets import MNIST, CIFAR10, FashionMNIST
 from torchvision import transforms
 from torch.utils.data import DataLoader
 from typing import Tuple
@@ -44,6 +44,23 @@ def load_dataset(name: str, batch_size: int) -> Tuple[DataLoader, DataLoader, in
             DataLoader(test, batch_size=batch_size),
             10,
             3,
+            (32, 32)
+        )
+
+    elif name == "fashion_mnist":
+        transform = transforms.Compose([
+            transforms.Resize((32, 32)),
+            transforms.ToTensor()
+        ])
+
+        train = FashionMNIST("./data", train=True, download=True, transform=transform)
+        test = FashionMNIST("./data", train=False, download=True, transform=transform)
+
+        return (
+            DataLoader(train, batch_size=batch_size, shuffle=True),
+            DataLoader(test, batch_size=batch_size),
+            10,
+            1,
             (32, 32)
         )
 

@@ -10,6 +10,7 @@ interface CompareClassMetricsProps {
 type Metric = 'f1' | 'precision' | 'recall'
 
 const MNIST_LABELS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+const FASHION_MNIST_LABELS = ['T-shirt', 'Trouser', 'Pullover', 'Dress', 'Coat', 'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Boot']
 const CIFAR_LABELS = ['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
 function classMetrics(matrix: number[][]) {
@@ -41,7 +42,7 @@ export default function CompareClassMetrics({ results, dataset }: CompareClassMe
   const valid = results.filter(r => r.confusion_matrix)
   if (!valid.length) return null
 
-  const labels = dataset === 'cifar10' ? CIFAR_LABELS : MNIST_LABELS
+  const labels = dataset === 'cifar10' ? CIFAR_LABELS : dataset === 'fashion_mnist' ? FASHION_MNIST_LABELS : MNIST_LABELS
   const perModel = valid.map(r => classMetrics(r.confusion_matrix!))
   const n = labels.length
 

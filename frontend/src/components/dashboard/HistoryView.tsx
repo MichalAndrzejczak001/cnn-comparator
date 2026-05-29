@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getExperiments, rerunExperiment, updateNote } from '../../api/client'
 import type { ExperimentResponse } from '../../types/api'
-import { MODEL_LABELS } from '../../types/api'
+import { MODEL_LABELS, DATASET_LABELS } from '../../types/api'
 import { downloadCsv, csvDate } from '../../utils/csv'
 import ClassifyImageModal from './ClassifyImageModal'
 import GradCamModal from './GradCamModal'
@@ -199,7 +199,7 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
                     <span className="badge badge-model">{MODEL_LABELS[exp.model] || exp.model}</span>
                   </td>
                   <td>
-                    <span className="badge badge-dataset">{exp.dataset.toUpperCase()}</span>
+                    <span className="badge badge-dataset">{DATASET_LABELS[exp.dataset] ?? exp.dataset.toUpperCase()}</span>
                   </td>
                   <td>{exp.epochs}</td>
                   <td className="text-green">{(exp.test_accuracy * 100).toFixed(2)}%</td>

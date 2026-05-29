@@ -4,6 +4,7 @@ interface ConfusionMatrixProps {
 }
 
 const MNIST_LABELS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+const FASHION_MNIST_LABELS = ['T-shirt', 'Trouser', 'Pullover', 'Dress', 'Coat', 'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Boot']
 const CIFAR_LABELS = ['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
 const CELL = 38
@@ -14,7 +15,7 @@ const PAD_RIGHT = 10
 
 export default function ConfusionMatrix({ matrix, dataset }: ConfusionMatrixProps) {
   const n = matrix.length
-  const labels = dataset === 'cifar10' ? CIFAR_LABELS : MNIST_LABELS
+  const labels = dataset === 'cifar10' ? CIFAR_LABELS : dataset === 'fashion_mnist' ? FASHION_MNIST_LABELS : MNIST_LABELS
 
   const maxVal = Math.max(...matrix.flatMap(row => row))
 

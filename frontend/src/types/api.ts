@@ -63,7 +63,7 @@ export interface CompareResult {
 }
 
 export const MODELS = ['simple_cnn', 'lenet5', 'vgg11', 'resnet18'] as const
-export const DATASETS = ['mnist', 'cifar10'] as const
+export const DATASETS = ['mnist', 'fashion_mnist', 'cifar10'] as const
 
 export type ModelName = (typeof MODELS)[number]
 export type DatasetName = (typeof DATASETS)[number]
@@ -73,6 +73,12 @@ export const MODEL_LABELS: Record<string, string> = {
   lenet5: 'LeNet-5',
   vgg11: 'VGG-11',
   resnet18: 'ResNet-18',
+}
+
+export const DATASET_LABELS: Record<string, string> = {
+  mnist: 'MNIST',
+  fashion_mnist: 'Fashion-MNIST',
+  cifar10: 'CIFAR-10',
 }
 
 export const MODEL_COLORS: Record<string, string> = {

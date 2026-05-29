@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { runExperiment } from '../../api/client'
-import { MODELS, DATASETS, MODEL_COLORS, MODEL_LABELS } from '../../types/api'
+import { MODELS, DATASETS, MODEL_COLORS, MODEL_LABELS, DATASET_LABELS } from '../../types/api'
 import type { ExperimentResponse } from '../../types/api'
 import LossChart from './LossChart'
 import ConfusionMatrix from './ConfusionMatrix'
@@ -68,7 +68,7 @@ export default function NewExperimentView() {
               >
                 {DATASETS.map((d) => (
                   <option key={d} value={d}>
-                    {d.toUpperCase()}
+                    {DATASET_LABELS[d] ?? d.toUpperCase()}
                   </option>
                 ))}
               </select>
@@ -130,7 +130,7 @@ export default function NewExperimentView() {
       {result && (
         <div className="card">
           <h3 className="result-title">
-            Wyniki — {MODEL_LABELS[result.model]} na {result.dataset.toUpperCase()}
+            Wyniki — {MODEL_LABELS[result.model]} na {DATASET_LABELS[result.dataset] ?? result.dataset.toUpperCase()}
           </h3>
           <div className="stats-grid">
             <div className="stat-box">
