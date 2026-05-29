@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Literal
+from typing import Literal, List
 
 
 class TrainingConfig(BaseModel):
@@ -16,4 +16,13 @@ class ExperimentConfig(BaseModel):
 class CompareConfig(BaseModel):
     dataset: Literal["mnist", "cifar10"]
     training: TrainingConfig
+
+class ClassConfidence(BaseModel):
+    label: str
+    confidence: float
+
+class PredictResponse(BaseModel):
+    predicted_class: str
+    predicted_index: int
+    confidences: List[ClassConfidence]
 

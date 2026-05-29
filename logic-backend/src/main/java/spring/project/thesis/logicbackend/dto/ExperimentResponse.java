@@ -43,6 +43,9 @@ public class ExperimentResponse {
 
     private String note;
 
+    @JsonProperty("model_id")
+    private String modelId;
+
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
@@ -61,6 +64,7 @@ public class ExperimentResponse {
                 .trainingTimeSeconds(experiment.getTrainingTimeSeconds())
                 .confusionMatrix(experiment.getConfusionMatrix())
                 .note(experiment.getNote())
+                .modelId(experiment.getModelId())
                 .createdAt(experiment.getCreatedAt())
                 .build();
     }

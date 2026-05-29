@@ -52,5 +52,7 @@ public class Experiment {
     @Column(length = 1000)
     private String note;
 
+    private String modelId;
+
     private LocalDateTime createdAt;
 }

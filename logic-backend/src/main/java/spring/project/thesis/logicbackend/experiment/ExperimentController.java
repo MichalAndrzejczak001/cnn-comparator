@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import spring.project.thesis.logicbackend.dto.ClassifyResponse;
 import spring.project.thesis.logicbackend.dto.NoteRequest;
 import spring.project.thesis.logicbackend.dto.CompareExperimentsRequest;
 import spring.project.thesis.logicbackend.dto.CompareRequest;
@@ -47,6 +50,14 @@ public class ExperimentController {
     @PatchMapping("/experiments/{id}/note")
     public ExperimentResponse updateNote(@PathVariable Long id, @RequestBody NoteRequest request) {
         return experimentService.updateNote(id, request);
+    }
+
+    @PostMapping("/experiments/{id}/classify")
+    public ClassifyResponse classifyImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file
+    ) {
+        return experimentService.classifyImage(id, file);
     }
 
     @PostMapping("/compare")

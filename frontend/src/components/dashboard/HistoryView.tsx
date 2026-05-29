@@ -3,6 +3,7 @@ import { getExperiments, rerunExperiment, updateNote } from '../../api/client'
 import type { ExperimentResponse } from '../../types/api'
 import { MODEL_LABELS } from '../../types/api'
 import { downloadCsv, csvDate } from '../../utils/csv'
+import ClassifyImageModal from './ClassifyImageModal'
 
 interface HistoryViewProps {
   onCompareSelected: (ids: number[]) => void
@@ -11,6 +12,12 @@ interface HistoryViewProps {
 interface NoteModal {
   id: number
   text: string
+}
+
+interface ClassifyModal {
+  id: number
+  model: string
+  dataset: string
 }
 
 function formatDate(dt: string): string {
@@ -22,6 +29,7 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [noteModal, setNoteModal] = useState<NoteModal | null>(null)
+  const [classifyModal, setClassifyModal] = useState<ClassifyModal | null>(null)
   const [rerunning, setRerunning] = useState<number | null>(null)
   const [savingNote, setSavingNote] = useState(false)
   const [error, setError] = useState('')
@@ -213,6 +221,14 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
                       >
                         {rerunning === exp.id ? '...' : 'Wznów'}
                       </button>
+                      {exp.model_id && (
+                        <button
+                          className="btn-sm btn-primary"
+                          onClick={() => setClassifyModal({ id: exp.id, model: exp.model, dataset: exp.dataset })}
+                        >
+                          Klasyfikuj
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -220,6 +236,15 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
             </tbody>
           </table>
         </div>
+      )}
+
+      {classifyModal && (
+        <ClassifyImageModal
+          experimentId={classifyModal.id}
+          model={classifyModal.model}
+          dataset={classifyModal.dataset}
+          onClose={() => setClassifyModal(null)}
+        />
       )}
 
       {noteModal && (

@@ -24,7 +24,19 @@ export interface ExperimentResponse {
   training_time_seconds: number
   confusion_matrix: number[][] | null
   note: string | null
+  model_id: string | null
   created_at: string
+}
+
+export interface ClassConfidence {
+  label: string
+  confidence: number
+}
+
+export interface ClassifyResponse {
+  predicted_class: string
+  predicted_index: number
+  confidences: ClassConfidence[]
 }
 
 export interface ModelResult {

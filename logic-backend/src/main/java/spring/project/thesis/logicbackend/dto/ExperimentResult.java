@@ -8,6 +8,9 @@ import java.util.List;
 public class ExperimentResult {
     private String status;
 
+    @JsonProperty("model_id")
+    private String modelId;
+
     @JsonProperty("train_loss_per_epoch")
     private List<Double> trainLossPerEpoch;
 

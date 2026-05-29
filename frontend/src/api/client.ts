@@ -1,4 +1,4 @@
-import type { ExperimentRequest, ExperimentResponse, CompareResult, TrainingConfig } from '../types/api'
+import type { ExperimentRequest, ExperimentResponse, CompareResult, TrainingConfig, ClassifyResponse } from '../types/api'
 
 function authHeaders(): HeadersInit {
   const token = localStorage.getItem('token')
@@ -64,6 +64,18 @@ export async function runCompare(
     method: 'POST',
     headers: authHeaders(),
     body: JSON.stringify({ dataset, training }),
+  })
+  return handleResponse(res)
+}
+
+export async function classifyImage(id: number, file: File): Promise<ClassifyResponse> {
+  const token = localStorage.getItem('token')
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await fetch(`/experiments/${id}/classify`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
   })
   return handleResponse(res)
 }
