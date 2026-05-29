@@ -5,6 +5,7 @@ import { MODEL_LABELS } from '../../types/api'
 import { downloadCsv, csvDate } from '../../utils/csv'
 import ClassifyImageModal from './ClassifyImageModal'
 import GradCamModal from './GradCamModal'
+import DrawDigitModal from './DrawDigitModal'
 
 interface HistoryViewProps {
   onCompareSelected: (ids: number[]) => void
@@ -32,6 +33,7 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
   const [noteModal, setNoteModal] = useState<NoteModal | null>(null)
   const [classifyModal, setClassifyModal] = useState<ClassifyModal | null>(null)
   const [gradCamModal, setGradCamModal] = useState<ClassifyModal | null>(null)
+  const [drawModal, setDrawModal] = useState<ClassifyModal | null>(null)
   const [rerunning, setRerunning] = useState<number | null>(null)
   const [savingNote, setSavingNote] = useState(false)
   const [error, setError] = useState('')
@@ -239,6 +241,14 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
                           Grad-CAM
                         </button>
                       )}
+                      {exp.model_id && exp.dataset === 'mnist' && (
+                        <button
+                          className="btn-sm btn-outline"
+                          onClick={() => setDrawModal({ id: exp.id, model: exp.model, dataset: exp.dataset })}
+                        >
+                          Rysuj
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -263,6 +273,14 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
           model={gradCamModal.model}
           dataset={gradCamModal.dataset}
           onClose={() => setGradCamModal(null)}
+        />
+      )}
+
+      {drawModal && (
+        <DrawDigitModal
+          experimentId={drawModal.id}
+          model={drawModal.model}
+          onClose={() => setDrawModal(null)}
         />
       )}
 
