@@ -61,7 +61,6 @@ export default function RadarChart({ results }: RadarChartProps) {
       <div className="chart-title">Porównanie wielokryterialne</div>
       <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxHeight: 440 }}>
 
-        {/* Grid polygons */}
         {[0.25, 0.5, 0.75, 1.0].map(frac => (
           <polygon
             key={frac}
@@ -72,7 +71,6 @@ export default function RadarChart({ results }: RadarChartProps) {
           />
         ))}
 
-        {/* Grid fraction labels (on first axis) */}
         {[0.25, 0.5, 0.75].map(frac => {
           const { x, y } = polarPoint(0, frac)
           return (
@@ -82,7 +80,6 @@ export default function RadarChart({ results }: RadarChartProps) {
           )
         })}
 
-        {/* Axis lines */}
         {Array.from({ length: N }, (_, i) => {
           const end = polarPoint(i, 1)
           return (
@@ -91,7 +88,6 @@ export default function RadarChart({ results }: RadarChartProps) {
           )
         })}
 
-        {/* Model polygons */}
         {modelScores.map(({ model, scores }) => {
           const color = MODEL_COLORS[model] || '#888'
           const pts = scores.map((s, i) => {
@@ -105,7 +101,6 @@ export default function RadarChart({ results }: RadarChartProps) {
           )
         })}
 
-        {/* Model dots on axes */}
         {modelScores.map(({ model, scores }) => {
           const color = MODEL_COLORS[model] || '#888'
           return scores.map((s, i) => {
@@ -114,7 +109,6 @@ export default function RadarChart({ results }: RadarChartProps) {
           })
         })}
 
-        {/* Axis labels */}
         {AXES.map((label, i) => {
           const { x, y } = polarPoint(i, 1.22)
           const anchor = x < CX - 5 ? 'end' : x > CX + 5 ? 'start' : 'middle'
@@ -126,7 +120,6 @@ export default function RadarChart({ results }: RadarChartProps) {
           )
         })}
 
-        {/* Legend */}
         {modelScores.map(({ model }, i) => {
           const color = MODEL_COLORS[model] || '#888'
           const lx = 20 + i * 95

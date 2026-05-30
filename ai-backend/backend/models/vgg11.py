@@ -5,7 +5,6 @@ class VGG11(nn.Module):
     def __init__(self, in_channels: int, num_classes: int, input_size=(32, 32)):
         super().__init__()
 
-        # Sekwencja konwolucyjna VGG11
         self.features = nn.Sequential(
             nn.Conv2d(in_channels, 64, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
@@ -34,10 +33,8 @@ class VGG11(nn.Module):
             nn.MaxPool2d(2, 2),
         )
 
-        # Liczymy dynamicznie rozmiar flatten
         self.flatten_size = self._get_flatten_size(input_size, in_channels)
 
-        # Warstwy w pełni połączone (classifier)
         self.classifier = nn.Sequential(
             nn.Linear(self.flatten_size, 4096),
             nn.ReLU(inplace=True),

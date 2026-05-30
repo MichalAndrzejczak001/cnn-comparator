@@ -74,5 +74,3 @@ def evaluate(model, loader, device="cpu"):
         "accuracy": accuracy,
         "confusion_matrix": matrix
     }
-
-

@@ -1,6 +1,5 @@
 const CELL = 6
 
-// 10×10 pixel art digits — each cell = 6px → 60×60 SVG
 const DIGIT_1: number[][] = [
   [0,0,0,1,1,0,0,0,0,0],
   [0,0,1,1,1,0,0,0,0,0],

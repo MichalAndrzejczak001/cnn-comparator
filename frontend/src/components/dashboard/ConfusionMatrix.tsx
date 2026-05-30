@@ -40,7 +40,6 @@ export default function ConfusionMatrix({ matrix, dataset }: ConfusionMatrixProp
       <div className="chart-title">Macierz pomyłek</div>
       <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxHeight: 480 }}>
 
-        {/* Y-axis label */}
         <text
           textAnchor="middle" fill="#3d5070" fontSize="10"
           transform={`translate(8,${PAD_TOP + (n * CELL) / 2}) rotate(-90)`}
@@ -48,7 +47,6 @@ export default function ConfusionMatrix({ matrix, dataset }: ConfusionMatrixProp
           Prawdziwa klasa
         </text>
 
-        {/* X-axis label */}
         <text
           textAnchor="middle" fill="#3d5070" fontSize="10"
           x={LABEL_LEFT + (n * CELL) / 2}
@@ -57,7 +55,6 @@ export default function ConfusionMatrix({ matrix, dataset }: ConfusionMatrixProp
           Przewidziana klasa
         </text>
 
-        {/* Row labels (left) */}
         {labels.map((label, i) => (
           <text
             key={`row-${i}`}
@@ -71,7 +68,6 @@ export default function ConfusionMatrix({ matrix, dataset }: ConfusionMatrixProp
           </text>
         ))}
 
-        {/* Column labels (bottom, rotated 45°) */}
         {labels.map((label, j) => (
           <text
             key={`col-${j}`}
@@ -84,7 +80,6 @@ export default function ConfusionMatrix({ matrix, dataset }: ConfusionMatrixProp
           </text>
         ))}
 
-        {/* Cells */}
         {matrix.map((row, i) =>
           row.map((val, j) => {
             const x = LABEL_LEFT + j * CELL

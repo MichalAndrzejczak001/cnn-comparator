@@ -3,6 +3,7 @@ package spring.project.thesis.logicbackend.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -11,10 +12,11 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private final String SECRET = "super-secret-key-that-is-long-enough-32b";
+    @Value("${jwt.secret}")
+    private String secret;
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes());
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     public String generateToken(String username) {

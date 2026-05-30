@@ -29,7 +29,6 @@ export default function AccuracyTimeChart({ results }: AccuracyTimeChartProps) {
     <div className="chart-container">
       <div className="chart-title">Dokładność vs czas treningu</div>
       <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxHeight: 240 }}>
-        {/* Y grid */}
         {Array.from({ length: gridY + 1 }, (_, i) => {
           const v = minA + (i / gridY) * (maxA - minA)
           return (
@@ -43,7 +42,6 @@ export default function AccuracyTimeChart({ results }: AccuracyTimeChartProps) {
           )
         })}
 
-        {/* X grid */}
         {Array.from({ length: gridX + 1 }, (_, i) => {
           const v = minT + (i / gridX) * (maxT - minT)
           return (
@@ -57,11 +55,9 @@ export default function AccuracyTimeChart({ results }: AccuracyTimeChartProps) {
           )
         })}
 
-        {/* Axes */}
         <line x1={PL} y1={PT + IH} x2={W - PR} y2={PT + IH} stroke="#253550" strokeWidth="1" />
         <line x1={PL} y1={PT} x2={PL} y2={PT + IH} stroke="#253550" strokeWidth="1" />
 
-        {/* Axis labels */}
         <text x={PL + IW / 2} y={H - 2} textAnchor="middle" fill="#3d5070" fontSize="11">
           Czas treningu (s)
         </text>
@@ -70,7 +66,6 @@ export default function AccuracyTimeChart({ results }: AccuracyTimeChartProps) {
           Dokładność
         </text>
 
-        {/* Points */}
         {results.map(r => {
           const cx = toX(r.training_time_seconds)
           const cy = toY(r.test_accuracy)

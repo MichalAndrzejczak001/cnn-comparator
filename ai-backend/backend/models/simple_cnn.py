@@ -10,7 +10,6 @@ class SimpleCNN(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
         self.pool = nn.MaxPool2d(2)
 
-        # Obliczamy dynamicznie rozmiar flatten po warstwach conv+pool
         self.flatten_size = self._get_flatten_size(input_size)
 
         self.fc1 = nn.Linear(self.flatten_size, 128)

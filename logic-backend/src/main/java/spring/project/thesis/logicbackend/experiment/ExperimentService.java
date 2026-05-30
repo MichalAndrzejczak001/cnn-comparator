@@ -92,12 +92,7 @@ public class ExperimentService {
     }
 
     public ExperimentResponse rerunExperiment(Long experimentId) {
-        Experiment original = experimentRepository.findById(experimentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        if (!original.getUser().getId().equals(currentUser().getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
+        Experiment original = findOwnedExperiment(experimentId);
 
         ExperimentRequest request = new ExperimentRequest();
         request.setModel(original.getModel());
@@ -113,87 +108,62 @@ public class ExperimentService {
     }
 
     public ExperimentResponse updateNote(Long experimentId, NoteRequest request) {
-        Experiment experiment = experimentRepository.findById(experimentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        if (!experiment.getUser().getId().equals(currentUser().getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-
+        Experiment experiment = findOwnedExperiment(experimentId);
         experiment.setNote(request.getNote());
         return ExperimentResponse.from(experimentRepository.save(experiment));
     }
 
     public ClassifyResponse classifyImage(Long experimentId, MultipartFile file) {
-        Experiment experiment = experimentRepository.findById(experimentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        if (!experiment.getUser().getId().equals(currentUser().getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-
+        Experiment experiment = findOwnedExperiment(experimentId);
         if (experiment.getModelId() == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "No saved model for this experiment");
         }
-
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("model_name", experiment.getModel());
-            body.add("dataset", experiment.getDataset());
-            body.add("model_id", experiment.getModelId());
-
-            ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return file.getOriginalFilename();
-                }
-            };
-            body.add("file", fileResource);
-
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-            return restTemplate.postForObject(aiBackendUrl + "/predict", requestEntity, ClassifyResponse.class);
+            return restTemplate.postForObject(
+                    aiBackendUrl + "/predict", buildImageRequest(experiment, file), ClassifyResponse.class);
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to read image file");
         }
     }
 
     public GradCamResponse gradCam(Long experimentId, MultipartFile file) {
-        Experiment experiment = experimentRepository.findById(experimentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        if (!experiment.getUser().getId().equals(currentUser().getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-
+        Experiment experiment = findOwnedExperiment(experimentId);
         if (experiment.getModelId() == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "No saved model for this experiment");
         }
-
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("model_name", experiment.getModel());
-            body.add("dataset", experiment.getDataset());
-            body.add("model_id", experiment.getModelId());
-
-            ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return file.getOriginalFilename();
-                }
-            };
-            body.add("file", fileResource);
-
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-            return restTemplate.postForObject(aiBackendUrl + "/gradcam", requestEntity, GradCamResponse.class);
+            return restTemplate.postForObject(
+                    aiBackendUrl + "/gradcam", buildImageRequest(experiment, file), GradCamResponse.class);
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to read image file");
         }
+    }
+
+    private Experiment findOwnedExperiment(Long experimentId) {
+        Experiment experiment = experimentRepository.findById(experimentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (!experiment.getUser().getId().equals(currentUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        return experiment;
+    }
+
+    private HttpEntity<MultiValueMap<String, Object>> buildImageRequest(Experiment experiment, MultipartFile file) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("model_name", experiment.getModel());
+        body.add("dataset", experiment.getDataset());
+        body.add("model_id", experiment.getModelId());
+        body.add("file", new ByteArrayResource(file.getBytes()) {
+            @Override
+            public String getFilename() {
+                return file.getOriginalFilename();
+            }
+        });
+
+        return new HttpEntity<>(body, headers);
     }
 
     public CompareResult runCompare(CompareRequest request) {

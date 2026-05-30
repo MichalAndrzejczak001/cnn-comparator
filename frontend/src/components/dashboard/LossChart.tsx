@@ -48,7 +48,6 @@ export default function LossChart({ series, title }: LossChartProps) {
     <div className="chart-container">
       {title && <div className="chart-title">{title}</div>}
       <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxHeight: 220 }}>
-        {/* Grid lines */}
         {gridVals.map((v, i) => (
           <g key={i}>
             <line
@@ -61,22 +60,18 @@ export default function LossChart({ series, title }: LossChartProps) {
           </g>
         ))}
 
-        {/* Axes */}
         <line x1={PL} y1={PT + INNER_H} x2={W - PR} y2={PT + INNER_H} stroke="#253550" strokeWidth="1" />
         <line x1={PL} y1={PT} x2={PL} y2={PT + INNER_H} stroke="#253550" strokeWidth="1" />
 
-        {/* X labels */}
         {xLabels.map(({ epoch, x }) => (
           <text key={epoch} x={x} y={H - PB + 16} textAnchor="middle" fill="#3d5070" fontSize="9.5">
             {epoch}
           </text>
         ))}
 
-        {/* Axis label — Epoch */}
         <text x={PL + INNER_W / 2} y={H - 2} textAnchor="middle" fill="#3d5070" fontSize="11">
           Epoka
         </text>
-        {/* Axis label — Loss (rotated) */}
         <text
           textAnchor="middle" fill="#3d5070" fontSize="11"
           transform={`translate(12,${PT + INNER_H / 2}) rotate(-90)`}
@@ -84,7 +79,6 @@ export default function LossChart({ series, title }: LossChartProps) {
           Strata
         </text>
 
-        {/* Series */}
         {validSeries.map(s => {
           const pts = s.data.map((v, i) => [toX(i, s.data.length), toY(v)] as [number, number])
           const pathD = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')
