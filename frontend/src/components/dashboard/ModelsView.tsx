@@ -1,6 +1,6 @@
 import { MODEL_COLORS } from '../../types/api'
 
-type LayerType = 'conv' | 'pool' | 'fc' | 'flatten' | 'resblock'
+type LayerType = 'conv' | 'pool' | 'fc' | 'flatten' | 'resblock' | 'dwconv'
 
 interface LayerBlock {
   label: string
@@ -24,6 +24,7 @@ const LAYER_COLORS: Record<LayerType, string> = {
   fc: '#7c3aed',
   flatten: '#475569',
   resblock: '#10b981',
+  dwconv: '#f97316',
 }
 
 const LAYER_LABELS: Record<LayerType, string> = {
@@ -32,6 +33,7 @@ const LAYER_LABELS: Record<LayerType, string> = {
   fc: 'Liniowa (FC)',
   flatten: 'Flatten',
   resblock: 'Blok resztkowy',
+  dwconv: 'DW-Sep Conv',
 }
 
 const MODELS_DATA: ModelData[] = [
@@ -140,6 +142,63 @@ const MODELS_DATA: ModelData[] = [
       { label: 'Aktywacja', value: 'ReLU + BN' },
       { label: 'Skip conn.', value: 'Tak' },
       { label: 'Rok', value: '2015' },
+    ],
+  },
+  {
+    key: 'alexnet',
+    label: 'AlexNet',
+    accent: MODEL_COLORS['alexnet'],
+    year: '2012',
+    description:
+      'Architektura Krizhevsky\'ego, która wygrała ImageNet 2012 z przełomową przewagą. Pierwsza sieć CNN w erze głębokiego uczenia maszynowego — wprowadza dropout jako regularyzację oraz ReLU zamiast Tanh.',
+    layers: [
+      { label: 'Conv 64', type: 'conv', note: '3×3 + ReLU' },
+      { label: 'MaxPool', type: 'pool', note: '2×2' },
+      { label: 'Conv 192', type: 'conv', note: '3×3 + ReLU' },
+      { label: 'MaxPool', type: 'pool', note: '2×2' },
+      { label: 'Conv 384', type: 'conv', note: '3×3 + ReLU' },
+      { label: 'Conv 256', type: 'conv', note: '3×3 + ReLU' },
+      { label: 'Conv 256', type: 'conv', note: '3×3 + ReLU' },
+      { label: 'MaxPool', type: 'pool', note: '2×2' },
+      { label: 'Flatten', type: 'flatten' },
+      { label: 'FC 2048', type: 'fc', note: 'ReLU + Dropout' },
+      { label: 'FC 2048', type: 'fc', note: 'ReLU + Dropout' },
+      { label: 'FC 10', type: 'fc', note: 'wyjście' },
+    ],
+    specs: [
+      { label: 'Parametry', value: '~15 M' },
+      { label: 'Warstwy', value: '8' },
+      { label: 'Kanały', value: '64–384' },
+      { label: 'Aktywacja', value: 'ReLU' },
+      { label: 'Dropout', value: '0.5' },
+      { label: 'Rok', value: '2012' },
+    ],
+  },
+  {
+    key: 'mobilenet',
+    label: 'MobileNet V1',
+    accent: MODEL_COLORS['mobilenet'],
+    year: '2017',
+    description:
+      'Lekka architektura Google dla urządzeń mobilnych — Howard et al., 2017. Zastępuje standardowe sploty przez depthwise separable convolutions: oddzielny splot przestrzenny (per kanał) i punktowy 1×1. Drastycznie zmniejsza liczbę parametrów przy zachowaniu dobrej dokładności.',
+    layers: [
+      { label: 'Conv 32', type: 'conv', note: '3×3 + BN' },
+      { label: 'DW-Sep 64', type: 'dwconv', note: 's=1' },
+      { label: 'DW-Sep 128', type: 'dwconv', note: 's=2 ↓' },
+      { label: 'DW-Sep 128', type: 'dwconv', note: 's=1' },
+      { label: 'DW-Sep 256', type: 'dwconv', note: 's=2 ↓' },
+      { label: 'DW-Sep 256', type: 'dwconv', note: 's=1' },
+      { label: 'DW-Sep 512', type: 'dwconv', note: 's=2 ↓' },
+      { label: 'GlobalAvgPool', type: 'pool' },
+      { label: 'FC 10', type: 'fc', note: 'wyjście' },
+    ],
+    specs: [
+      { label: 'Parametry', value: '~270 K' },
+      { label: 'Warstwy', value: '7 bloków' },
+      { label: 'Kanały', value: '32–512' },
+      { label: 'Aktywacja', value: 'ReLU + BN' },
+      { label: 'DW-Sep', value: 'Tak' },
+      { label: 'Rok', value: '2017' },
     ],
   },
 ]

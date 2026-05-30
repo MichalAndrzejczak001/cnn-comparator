@@ -5,6 +5,7 @@ import type { ExperimentResponse } from '../../types/api'
 import LossChart from './LossChart'
 import ConfusionMatrix from './ConfusionMatrix'
 import ClassMetrics from './ClassMetrics'
+import GradCamGallery from './GradCamGallery'
 
 export default function NewExperimentView() {
   const [model, setModel] = useState('simple_cnn')
@@ -181,6 +182,9 @@ export default function NewExperimentView() {
               <ConfusionMatrix matrix={result.confusion_matrix} dataset={result.dataset} />
               <ClassMetrics matrix={result.confusion_matrix} dataset={result.dataset} />
             </>
+          )}
+          {result.sample_gradcams && result.sample_gradcams.length > 0 && (
+            <GradCamGallery samples={result.sample_gradcams} />
           )}
         </div>
       )}

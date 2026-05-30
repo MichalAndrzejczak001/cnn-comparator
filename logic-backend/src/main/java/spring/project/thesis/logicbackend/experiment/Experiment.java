@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import spring.project.thesis.logicbackend.config.DoubleListConverter;
 import spring.project.thesis.logicbackend.config.IntMatrixConverter;
+import spring.project.thesis.logicbackend.config.SampleGradCamListConverter;
+import spring.project.thesis.logicbackend.dto.SampleGradCam;
 import spring.project.thesis.logicbackend.user.User;
 
 import java.time.LocalDateTime;
@@ -55,4 +57,8 @@ public class Experiment {
     private String modelId;
 
     private LocalDateTime createdAt;
+
+    @Convert(converter = SampleGradCamListConverter.class)
+    @Column(columnDefinition = "MEDIUMTEXT")
+    private List<SampleGradCam> sampleGradcams;
 }

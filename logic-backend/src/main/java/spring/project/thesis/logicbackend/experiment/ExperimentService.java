@@ -63,6 +63,7 @@ public class ExperimentService {
                 .trainingTimeSeconds(result.getTrainingTimeSeconds())
                 .confusionMatrix(result.getConfusionMatrix())
                 .modelId(result.getModelId())
+                .sampleGradcams(result.getSampleGradcams())
                 .createdAt(LocalDateTime.now())
                 .build());
 

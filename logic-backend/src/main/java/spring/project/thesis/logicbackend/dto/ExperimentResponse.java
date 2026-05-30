@@ -49,6 +49,9 @@ public class ExperimentResponse {
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
+    @JsonProperty("sample_gradcams")
+    private List<SampleGradCam> sampleGradcams;
+
     public static ExperimentResponse from(Experiment experiment) {
         return ExperimentResponse.builder()
                 .id(experiment.getId())
@@ -66,6 +69,7 @@ public class ExperimentResponse {
                 .note(experiment.getNote())
                 .modelId(experiment.getModelId())
                 .createdAt(experiment.getCreatedAt())
+                .sampleGradcams(experiment.getSampleGradcams())
                 .build();
     }
 }

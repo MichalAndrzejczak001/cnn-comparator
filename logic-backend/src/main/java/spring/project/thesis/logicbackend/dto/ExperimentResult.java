@@ -11,6 +11,9 @@ public class ExperimentResult {
     @JsonProperty("model_id")
     private String modelId;
 
+    @JsonProperty("sample_gradcams")
+    private List<SampleGradCam> sampleGradcams;
+
     @JsonProperty("train_loss_per_epoch")
     private List<Double> trainLossPerEpoch;
 

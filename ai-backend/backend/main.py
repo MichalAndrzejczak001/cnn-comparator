@@ -70,6 +70,9 @@ def run_experiment(config: ExperimentConfig):
     model_id = str(uuid.uuid4())
     torch.save(model.state_dict(), os.path.join(SAVED_MODELS_DIR, f"{model_id}.pth"))
 
+    class_labels = DATASET_CLASS_LABELS.get(config.dataset, [])
+    sample_gradcams = _generate_sample_gradcams(model, config.model, test_loader, class_labels, device)
+
     return {
         "status": "training and evaluation finished",
         "model_id": model_id,
@@ -78,7 +81,8 @@ def run_experiment(config: ExperimentConfig):
         "test_loss": metrics["loss"],
         "test_accuracy": metrics["accuracy"],
         "confusion_matrix": metrics["confusion_matrix"],
-        "training_time_seconds": training_time
+        "training_time_seconds": training_time,
+        "sample_gradcams": sample_gradcams,
     }
 
 @app.post("/compare")
@@ -93,7 +97,7 @@ def compare_models(config: CompareConfig):
 
     results = []
 
-    for model_name in ["simple_cnn", "lenet5", "vgg11", "resnet18"]:
+    for model_name in ["simple_cnn", "lenet5", "alexnet", "vgg11", "resnet18", "mobilenet"]:
         model = create_model(
             model_name,
             num_classes,
@@ -203,6 +207,65 @@ def predict(
     )
 
 
+DATASET_CLASS_LABELS = {
+    "mnist": MNIST_CLASSES,
+    "cifar10": CIFAR10_CLASSES,
+    "fashion_mnist": FASHION_MNIST_CLASSES,
+}
+
+
+def _generate_sample_gradcams(model, model_name, test_loader, class_labels, device):
+    model.eval()
+    samples = {}
+    n_classes = len(class_labels)
+
+    for images, labels in test_loader:
+        for img, label in zip(images, labels):
+            idx = label.item()
+            if idx not in samples:
+                samples[idx] = img.unsqueeze(0)
+            if len(samples) == n_classes:
+                break
+        if len(samples) == n_classes:
+            break
+
+    target_layer = _get_target_layer(model, model_name)
+    result = []
+
+    for true_idx, tensor in sorted(samples.items()):
+        try:
+            with torch.no_grad():
+                logits = model(tensor.to(device))
+                probs = F.softmax(logits, dim=1).squeeze().tolist()
+            pred_idx = int(torch.argmax(torch.tensor(probs)).item())
+            confidence = round(probs[pred_idx], 4)
+
+            cam = _compute_grad_cam(model, tensor, target_layer, pred_idx, device)
+
+            img_np = tensor.squeeze().cpu().numpy()
+            if img_np.ndim == 3:
+                img_np = np.transpose(img_np, (1, 2, 0))
+            else:
+                img_np = np.stack([img_np] * 3, axis=-1)
+
+            overlay = _overlay_cam(img_np.astype(np.float32), cam)
+
+            buf = io.BytesIO()
+            Image.fromarray(overlay).save(buf, format="PNG")
+            gradcam_b64 = base64.b64encode(buf.getvalue()).decode()
+
+            result.append({
+                "true_label": class_labels[true_idx],
+                "predicted_label": class_labels[pred_idx],
+                "confidence": confidence,
+                "gradcam_image": gradcam_b64,
+            })
+        except Exception:
+            pass
+
+    return result
+
+
 def _get_target_layer(model, model_name: str):
     if model_name == "simple_cnn":
         return model.conv2
@@ -212,6 +275,10 @@ def _get_target_layer(model, model_name: str):
         return model.features[18]
     elif model_name == "resnet18":
         return model.model.layer4[-1]
+    elif model_name == "alexnet":
+        return model.features[10]
+    elif model_name == "mobilenet":
+        return model.dw6
     raise ValueError(f"Unknown model: {model_name}")
 
 

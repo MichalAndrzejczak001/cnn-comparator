@@ -7,6 +7,8 @@ import ClassifyImageModal from './ClassifyImageModal'
 import GradCamModal from './GradCamModal'
 import DrawDigitModal from './DrawDigitModal'
 import AugmentModal from './AugmentModal'
+import GradCamGallery from './GradCamGallery'
+import type { SampleGradCam } from '../../types/api'
 
 interface HistoryViewProps {
   onCompareSelected: (ids: number[]) => void
@@ -36,6 +38,7 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
   const [gradCamModal, setGradCamModal] = useState<ClassifyModal | null>(null)
   const [drawModal, setDrawModal] = useState<ClassifyModal | null>(null)
   const [augmentModal, setAugmentModal] = useState<ClassifyModal | null>(null)
+  const [samplesModal, setSamplesModal] = useState<SampleGradCam[] | null>(null)
   const [rerunning, setRerunning] = useState<number | null>(null)
   const [savingNote, setSavingNote] = useState(false)
   const [error, setError] = useState('')
@@ -251,6 +254,14 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
                           Rysuj
                         </button>
                       )}
+                      {exp.sample_gradcams && exp.sample_gradcams.length > 0 && (
+                        <button
+                          className="btn-sm btn-outline"
+                          onClick={() => setSamplesModal(exp.sample_gradcams!)}
+                        >
+                          Próbki
+                        </button>
+                      )}
                       {exp.model_id && (
                         <button
                           className="btn-sm btn-outline"
@@ -301,6 +312,20 @@ export default function HistoryView({ onCompareSelected }: HistoryViewProps) {
           dataset={augmentModal.dataset}
           onClose={() => setAugmentModal(null)}
         />
+      )}
+
+      {samplesModal && (
+        <div className="modal-backdrop" onClick={() => setSamplesModal(null)}>
+          <div className="modal modal-wide" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <span className="modal-title">Próbki Grad-CAM ze zbioru testowego</span>
+              <button className="modal-close" onClick={() => setSamplesModal(null)}>✕</button>
+            </div>
+            <div style={{ overflowY: 'auto', maxHeight: '70vh', paddingBottom: '0.5rem' }}>
+              <GradCamGallery samples={samplesModal} />
+            </div>
+          </div>
+        </div>
       )}
 
       {noteModal && (

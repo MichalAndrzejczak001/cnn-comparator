@@ -1069,3 +1069,51 @@ select.form-input option {
   font-size: 0.7rem;
   color: #4f6080;
 }
+
+
+/* ===== Grad-CAM Gallery ===== */
+
+.modal-wide {
+  max-width: 900px;
+}
+
+.gradcam-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.gradcam-card {
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255,255,255,.03);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.gradcam-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,.3);
+}
+
+.gradcam-img {
+  width: 100%;
+  aspect-ratio: 1;
+  display: block;
+  image-rendering: pixelated;
+}
+
+.gradcam-labels {
+  padding: 0.4rem 0.45rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.gradcam-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem;
+}

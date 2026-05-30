@@ -61,7 +61,7 @@ export default function CompareAllView() {
     <div className="view">
       <h2 className="view-title">Porównaj wszystkie modele</h2>
       <p className="view-desc">
-        Trenuje Simple CNN, LeNet-5, VGG-11 i ResNet-18 na tym samym zbiorze danych i porównuje wyniki.
+        Trenuje Simple CNN, LeNet-5, AlexNet, VGG-11, ResNet-18 i MobileNet V1 na tym samym zbiorze danych i porównuje wyniki.
       </p>
 
       <div className="card">
@@ -129,7 +129,7 @@ export default function CompareAllView() {
         <div className="loading-card">
           <div className="spinner" />
           <span>
-            Trening 4 modeli — może potrwać kilka minut w zależności od sprzętu...
+            Trening 6 modeli — może potrwać kilka minut w zależności od sprzętu...
           </span>
         </div>
       )}
